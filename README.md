@@ -205,9 +205,3 @@ rejected — payments can never be created for a tenant the landlord hasn't onbo
 
 See [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) for a full walkthrough (Postgres, API, and
 frontend on free-tier hosting).
-
-## License
-
-MIT — see [`LICENSE`](./LICENSE).
-ENDOFFILE
-echo written
