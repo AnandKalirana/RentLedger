@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+:root {
+  /* Ledger identity: paper background, ink text, a single "verification stamp" accent. */
+  --paper: #faf9f6;
+  --paper-raised: #ffffff;
+  --ink: #101828;
+  --ink-soft: #475467;
+  --line: #e4e1d8;
+  --stamp: #0f6b4c; /* verified-stamp green — the one accent color in the system */
+  --stamp-soft: #e6f2ed;
+  --danger: #b42318;
+  --danger-soft: #fef3f2;
+}
+
+* {
+  border-color: var(--line);
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-mono-data {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--stamp);
+  outline-offset: 2px;
+}

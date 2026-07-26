@@ -1,0 +1,206 @@
+// RentLedger — Database Schema
+// Multi-tenant SaaS: every Landlord owns an isolated set of Tenants, PaymentLinks, and Payments.
+// All child models carry a direct landlordId FK (denormalized on purpose) so every query
+// can be scoped and indexed by tenant (landlord) without joining through intermediate tables.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum PaymentStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum PaymentLinkType {
+  REUSABLE // Generic link, shared with any tenant; tenant fills their own details
+  TENANT_SPECIFIC // Pre-filled for one tenant, still safe to share (no other tenant's data exposed)
+}
+
+enum TenantStatus {
+  ACTIVE
+  INACTIVE // Moved out / lease ended, kept for historical records
+}
+
+// ---------------------------------------------------------------------------
+// Landlord (application user / account owner)
+// ---------------------------------------------------------------------------
+
+model Landlord {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  passwordHash String
+  fullName     String
+  phone        String?
+  businessName String? // Optional display name shown on tenant-facing payment page
+  upiId        String? // Landlord's UPI VPA, used to render the QR code on the payment page
+  upiQrImageUrl String? // Optional pre-generated QR image (cloud storage URL)
+
+  isEmailVerified Boolean @default(false)
+  emailVerifiedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenants        Tenant[]
+  paymentLinks   PaymentLink[]
+  payments       Payment[]
+  refreshTokens  RefreshToken[]
+  notifications  Notification[]
+
+  @@index([email])
+  @@map("landlords")
+}
+
+// ---------------------------------------------------------------------------
+// Auth support — refresh tokens stored server-side so they can be revoked
+// ---------------------------------------------------------------------------
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique // never store the raw token, only its hash
+  landlordId String
+  landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  userAgent String?
+  ipAddress String?
+
+  @@index([landlordId])
+  @@map("refresh_tokens")
+}
+
+// ---------------------------------------------------------------------------
+// Tenant (a landlord's renter — NOT an application user, has no login)
+// ---------------------------------------------------------------------------
+
+model Tenant {
+  id         String   @id @default(cuid())
+  landlordId String
+  landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+
+  fullName      String
+  mobileNumber  String
+  email         String?
+  monthlyRent   Decimal  @db.Decimal(10, 2)
+  securityDeposit Decimal @db.Decimal(10, 2) @default(0)
+  moveInDate    DateTime
+  rentDueDay    Int      @default(1) // day of month, 1-31
+  status        TenantStatus @default(ACTIVE)
+  notes         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payments     Payment[]
+  paymentLinks PaymentLink[]
+
+  @@index([landlordId])
+  @@index([landlordId, status])
+  @@map("tenants")
+}
+
+// ---------------------------------------------------------------------------
+// PaymentLink — the shareable public link tenants use to submit payment proof
+// ---------------------------------------------------------------------------
+
+model PaymentLink {
+  id         String   @id @default(cuid())
+  landlordId String
+  landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+
+  tenantId String? // null when type = REUSABLE
+  tenant   Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  token    String          @unique @default(cuid()) // public, unguessable identifier used in the URL
+  type     PaymentLinkType @default(REUSABLE)
+  isActive Boolean         @default(true)
+  expiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payments Payment[]
+
+  @@index([landlordId])
+  @@index([token])
+  @@map("payment_links")
+}
+
+// ---------------------------------------------------------------------------
+// Payment — a single rent submission, pending manual verification
+// ---------------------------------------------------------------------------
+
+model Payment {
+  id         String   @id @default(cuid())
+  landlordId String
+  landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  paymentLinkId String?
+  paymentLink   PaymentLink? @relation(fields: [paymentLinkId], references: [id], onDelete: SetNull)
+
+  // Snapshot of what the submitter entered — kept even if the Tenant record later changes
+  submittedName   String
+  submittedMobile String
+  submittedEmail  String?
+
+  amount Decimal @db.Decimal(10, 2)
+
+  // Which rent cycle this payment is for, so dues/history can be reconciled
+  billingMonth Int // 1-12
+  billingYear  Int
+
+  proofFileUrl  String // cloud storage URL of the uploaded proof image
+  proofFileType String // mime type, validated at upload time
+
+  status         PaymentStatus @default(PENDING)
+  rejectionReason String?
+  verifiedAt     DateTime?
+  verifiedByLandlordId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([landlordId])
+  @@index([landlordId, status])
+  @@index([tenantId])
+  @@index([landlordId, billingYear, billingMonth])
+  @@map("payments")
+}
+
+// ---------------------------------------------------------------------------
+// Notification — in-app notifications (e.g. "New payment submitted")
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id         String   @id @default(cuid())
+  landlordId String
+  landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+
+  type    String // e.g. "PAYMENT_SUBMITTED", "PAYMENT_VERIFIED"
+  title   String
+  message String
+  isRead  Boolean @default(false)
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([landlordId, isRead])
+  @@map("notifications")
+}
