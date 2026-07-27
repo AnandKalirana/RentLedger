@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Upload } from "lucide-react";
-import { api, apiOrigin } from "@/lib/api";
+import { api, resolveFileUrl } from "@/lib/api";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 
@@ -108,7 +108,7 @@ export default function SettingsPage() {
           {profile?.upiQrImageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={`${apiOrigin}${profile.upiQrImageUrl}`}
+              src={resolveFileUrl(profile.upiQrImageUrl)}
               alt="Your UPI QR code"
               className="h-32 w-32 rounded-md border border-[var(--line)] object-contain"
             />

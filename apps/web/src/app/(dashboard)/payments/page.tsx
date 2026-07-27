@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Check, ExternalLink, X } from "lucide-react";
-import { api, apiOrigin } from "@/lib/api";
+import { api, resolveFileUrl } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
@@ -124,7 +124,7 @@ export default function PaymentsPage() {
               </div>
               <div className="flex items-center gap-2">
                 <a
-                  href={`${apiOrigin}${payment.proofFileUrl}`}
+                  href={resolveFileUrl(payment.proofFileUrl)}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-1 rounded-md border border-[var(--line)] px-3 py-1.5 text-sm text-[var(--ink-soft)] hover:text-[var(--ink)]"

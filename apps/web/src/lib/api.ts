@@ -4,6 +4,12 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/a
 
 export const apiOrigin = API_BASE_URL.replace(/\/api\/?$/, "");
 
+export function resolveFileUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${apiOrigin}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
 export const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true, // sends the httpOnly auth cookies set by the API

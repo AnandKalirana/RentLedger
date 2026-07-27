@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import QRCode from "qrcode";
 import { CheckCircle2, Upload } from "lucide-react";
-import { api, apiOrigin } from "@/lib/api";
+import { api, resolveFileUrl } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 
@@ -120,7 +120,7 @@ export default function PublicPaymentPage() {
     );
   }
 
-  const qrImage = info.landlord.upiQrImageUrl ? `${apiOrigin}${info.landlord.upiQrImageUrl}` : qrDataUrl;
+  const qrImage = resolveFileUrl(info.landlord.upiQrImageUrl) ?? qrDataUrl;
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[var(--paper)] px-6 py-10">
