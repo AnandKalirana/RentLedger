@@ -8,10 +8,19 @@ import { isProduction } from "@/config/env";
 const REFRESH_COOKIE_NAME = "refreshToken";
 const ACCESS_COOKIE_NAME = "accessToken";
 
+// Locally, localhost:3000 and localhost:4000 are same-site (browsers ignore
+// port for SameSite purposes), so "lax" works fine there. In production the
+// frontend and API are on entirely different domains (Vercel vs Render) —
+// genuinely cross-site — and SameSite=Lax cookies are NOT sent on cross-site
+// fetch/XHR calls, only on top-level navigations. That's why login succeeded
+// but every subsequent authenticated request silently had no cookie.
+// SameSite=None (which requires Secure) is what actually allows the cookie
+// on cross-site AJAX, and both Vercel and Render serve over HTTPS so Secure
+// is safe to set whenever we're in production.
 const cookieOptions = {
   httpOnly: true,
   secure: isProduction,
-  sameSite: "lax" as const,
+  sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
   path: "/",
 };
 
