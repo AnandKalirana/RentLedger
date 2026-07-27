@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { asyncHandler } from "@/utils/asyncHandler";
 import { sendSuccess } from "@/utils/response";
 import { ApiError } from "@/utils/ApiError";
-import { resolveProofUrl } from "@/utils/storage";
+import { persistUploadedFile } from "@/utils/storage";
 import * as profileService from "@/services/profile.service";
 
 export const getProfile = asyncHandler(async (req: Request, res: Response) => {
@@ -17,6 +17,7 @@ export const updateProfile = asyncHandler(async (req: Request, res: Response) =>
 
 export const uploadQrCode = asyncHandler(async (req: Request, res: Response) => {
   if (!req.file) throw ApiError.badRequest("QR code image is required");
-  const profile = await profileService.updateQrImage(req.landlord!.id, resolveProofUrl(req.file.filename));
+  const url = await persistUploadedFile(req.file, "qr");
+  const profile = await profileService.updateQrImage(req.landlord!.id, url);
   return sendSuccess(res, profile);
 });

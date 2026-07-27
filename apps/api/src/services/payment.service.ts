@@ -1,6 +1,6 @@
 import { prisma } from "@/config/database";
 import { ApiError } from "@/utils/ApiError";
-import { resolveProofUrl } from "@/utils/storage";
+import { persistUploadedFile } from "@/utils/storage";
 import { getPublicPaymentLink } from "@/services/paymentLink.service";
 import { notifyPaymentSubmitted } from "@/services/notification.service";
 import { sendPaymentStatusEmail, sendPaymentSubmittedEmail } from "@/services/email.service";
@@ -39,6 +39,8 @@ export async function submitPublicPayment(
     tenantId = tenant.id;
   }
 
+  const proofFileUrl = await persistUploadedFile(file, "proof");
+
   const payment = await prisma.payment.create({
     data: {
       landlordId: link.landlordId,
@@ -50,7 +52,7 @@ export async function submitPublicPayment(
       amount: input.amount,
       billingMonth: input.billingMonth,
       billingYear: input.billingYear,
-      proofFileUrl: resolveProofUrl(file.filename),
+      proofFileUrl,
       proofFileType: file.mimetype,
       status: "PENDING",
     },
@@ -75,11 +77,11 @@ export async function listPayments(landlordId: string, query: ListPaymentsQuery)
     ...(query.status ? { status: query.status } : {}),
     ...(query.search
       ? {
-          OR: [
-            { submittedName: { contains: query.search, mode: "insensitive" } },
-            { submittedMobile: { contains: query.search, mode: "insensitive" } },
-          ],
-        }
+        OR: [
+          { submittedName: { contains: query.search, mode: "insensitive" } },
+          { submittedMobile: { contains: query.search, mode: "insensitive" } },
+        ],
+      }
       : {}),
   };
 
