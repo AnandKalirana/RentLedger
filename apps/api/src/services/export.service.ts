@@ -143,7 +143,7 @@ export async function streamTenantPaymentHistoryPdf(landlordId: string, tenantId
       .text("No payment records yet.", tableLeft + 8, y + 7, { width: pageWidth - 16 });
     y += dataRowHeight;
   } else {
-    tenant.payments.forEach((payment, i) => {
+    tenant.payments.forEach((payment: (typeof tenant.payments)[0], i: number) => {
       y = ensureSpace(y, dataRowHeight);
       if (i % 2 === 1) {
         doc.rect(tableLeft, y, pageWidth, dataRowHeight).fill("#FAFAF8");

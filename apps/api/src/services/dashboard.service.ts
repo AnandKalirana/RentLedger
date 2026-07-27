@@ -36,10 +36,10 @@ export async function getDashboardSummary(landlordId: string) {
     }),
   ]);
 
-  const paidTenantIds = new Set(verifiedTenantIdsThisMonth.map((p) => p.tenantId));
+  const paidTenantIds = new Set(verifiedTenantIdsThisMonth.map((p: (typeof verifiedTenantIdsThisMonth)[0]) => p.tenantId));
   const totalDueAmount = activeTenants
-    .filter((tenant) => !paidTenantIds.has(tenant.id))
-    .reduce((sum, tenant) => sum + Number(tenant.monthlyRent), 0);
+    .filter((tenant: (typeof activeTenants)[0]) => !paidTenantIds.has(tenant.id))
+    .reduce((sum: number, tenant: (typeof activeTenants)[0]) => sum + Number(tenant.monthlyRent), 0);
 
   return {
     currentMonthRevenue: Number(revenueAgg._sum.amount ?? 0),
@@ -47,7 +47,7 @@ export async function getDashboardSummary(landlordId: string) {
     verifiedPaymentsCount: verifiedCount,
     totalDueAmount,
     activeTenantsCount: activeTenants.length,
-    recentTransactions: recentTransactions.map((payment) => ({
+    recentTransactions: recentTransactions.map((payment: (typeof recentTransactions)[0]) => ({
       id: payment.id,
       tenantId: payment.tenantId,
       tenantName: payment.tenant.fullName,

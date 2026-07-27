@@ -15,7 +15,7 @@ export const create = asyncHandler(async (req: Request, res: Response) => {
 
 export const list = asyncHandler(async (req: Request, res: Response) => {
   const links = await paymentLinkService.listPaymentLinks(req.landlord!.id);
-  return sendSuccess(res, links.map((link) => ({ ...link, url: buildPublicUrl(link.token) })));
+  return sendSuccess(res, links.map((link: (typeof links)[0]) => ({ ...link, url: buildPublicUrl(link.token) })));
 });
 
 export const deactivate = asyncHandler(async (req: Request, res: Response) => {

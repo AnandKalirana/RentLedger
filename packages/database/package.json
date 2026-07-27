@@ -2,9 +2,10 @@
   "name": "@rentledger/database",
   "version": "1.0.0",
   "private": true,
-  "main": "src/client.ts",
-  "types": "src/client.ts",
+  "main": "dist/client.js",
+  "types": "dist/client.d.ts",
   "scripts": {
+    "build": "tsc -p tsconfig.json",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
