@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  transpilePackages: ["@rentledger/shared"],
   images: {
     remotePatterns: [
       // Add your cloud storage / CDN hostname here once file storage is configured,
