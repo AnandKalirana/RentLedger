@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { AnyZodObject, ZodError } from "zod";
+import { AnyZodObject, ZodEffects, ZodError } from "zod";
 import { ApiError } from "@/utils/ApiError";
 
 type RequestPart = "body" | "query" | "params";
 
-export function validate(schema: AnyZodObject, part: RequestPart = "body") {
+export function validate(schema: AnyZodObject | ZodEffects<AnyZodObject>, part: RequestPart = "body") {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       req[part] = schema.parse(req[part]);
