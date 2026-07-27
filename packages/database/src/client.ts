@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { PrismaClient } from "../generated/client";
 
 // Prevents exhausting DB connections from hot-reload creating new clients in dev.
