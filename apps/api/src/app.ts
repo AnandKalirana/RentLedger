@@ -19,9 +19,15 @@ export function createApp() {
   app.set("trust proxy", 1);
 
   app.use(helmet());
+  // Strip a trailing slash defensively — a CLIENT_URL env var set with or
+  // without one shouldn't be able to break CORS (the browser's Origin header
+  // never includes a trailing slash, so an exact-match compare against a
+  // value that has one always fails).
+  const allowedOrigin = env.CLIENT_URL.replace(/\/$/, "");
+
   app.use(
     cors({
-      origin: env.CLIENT_URL,
+      origin: allowedOrigin,
       credentials: true,
     })
   );
