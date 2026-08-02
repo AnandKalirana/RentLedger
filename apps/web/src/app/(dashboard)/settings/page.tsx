@@ -48,7 +48,8 @@ export default function SettingsPage() {
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   async function loadProfile() {
-    setLoading(true);
+  setLoading(true);
+  try {
     const res = await api.get<{ data: Profile }>("/profile");
     setProfile(res.data.data);
     reset({
@@ -57,8 +58,12 @@ export default function SettingsPage() {
       phone: res.data.data.phone ?? "",
       upiId: res.data.data.upiId ?? "",
     });
+  } catch (err) {
+    setSaveMessage(err instanceof Error ? err.message : "Failed to load profile");
+  } finally {
     setLoading(false);
   }
+}
 
   useEffect(() => {
     loadProfile();
