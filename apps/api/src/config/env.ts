@@ -16,7 +16,7 @@ const envSchema = z.object({
 
   STORAGE_DRIVER: z.enum(["local", "supabase"]).default("local"),
   LOCAL_UPLOAD_DIR: z.string().default("uploads"),
-  SUPABASE_URL: z.string().url().optional(),
+  SUPABASE_URL: z.string().optional(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   SUPABASE_STORAGE_BUCKET: z.string().default("uploads"),
 
