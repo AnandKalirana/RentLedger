@@ -9,17 +9,21 @@ import { ApiError } from "@/utils/ApiError";
 let supabaseClient: SupabaseClient | null = null;
 
 function getSupabaseClient(): SupabaseClient {
-  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+  const rawUrl = env.SUPABASE_URL?.trim().replace(/^["']|["']$/g, "");
+  const rawKey = env.SUPABASE_SERVICE_ROLE_KEY?.trim().replace(/^["']|["']$/g, "");
+
+  if (!rawUrl || !rawKey) {
     throw ApiError.badRequest(
       "STORAGE_DRIVER is set to 'supabase' but SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variable is missing on Render."
     );
   }
+
   if (!supabaseClient) {
-    let url = env.SUPABASE_URL.trim();
+    let url = rawUrl;
     if (!/^https?:\/\//i.test(url)) {
       url = `https://${url}`;
     }
-    supabaseClient = createClient(url, env.SUPABASE_SERVICE_ROLE_KEY, {
+    supabaseClient = createClient(url, rawKey, {
       auth: { persistSession: false },
     });
   }
@@ -51,27 +55,34 @@ export async function persistUploadedFile(
   const filename = buildFilename(prefix, file.originalname);
 
   if (env.STORAGE_DRIVER === "supabase") {
-    const client = getSupabaseClient();
-    const bucket = env.SUPABASE_STORAGE_BUCKET || "uploads";
+    try {
+      const client = getSupabaseClient();
+      const bucket = (env.SUPABASE_STORAGE_BUCKET || "uploads").trim().replace(/^["']|["']$/g, "");
+      const fileData = new Uint8Array(file.buffer);
 
-    const { error } = await client.storage.from(bucket).upload(filename, file.buffer, {
-      contentType: file.mimetype || "image/png",
-      upsert: true,
-      cacheControl: "3600",
-    });
+      const { error } = await client.storage.from(bucket).upload(filename, fileData, {
+        contentType: file.mimetype || "image/png",
+        upsert: true,
+        cacheControl: "3600",
+      });
 
-    if (error) {
-      throw ApiError.badRequest(
-        `Supabase Storage upload failed: ${error.message} (Bucket: '${bucket}'). Please verify the bucket exists and is marked Public in Supabase Dashboard.`
-      );
+      if (error) {
+        throw ApiError.badRequest(
+          `Supabase Storage upload failed: ${error.message} (Bucket: '${bucket}'). Please verify the bucket exists and is marked Public in Supabase Dashboard.`
+        );
+      }
+
+      const { data } = client.storage.from(bucket).getPublicUrl(filename);
+      if (!data || !data.publicUrl) {
+        throw ApiError.badRequest("Failed to generate public URL from Supabase Storage.");
+      }
+
+      return data.publicUrl;
+    } catch (err) {
+      if (err instanceof ApiError) throw err;
+      const msg = err instanceof Error ? err.message : String(err);
+      throw ApiError.badRequest(`Supabase Storage Error: ${msg}`);
     }
-
-    const { data } = client.storage.from(bucket).getPublicUrl(filename);
-    if (!data || !data.publicUrl) {
-      throw ApiError.badRequest("Failed to generate public URL from Supabase Storage.");
-    }
-
-    return data.publicUrl;
   }
 
   // Local disk storage (dev / fallback)
