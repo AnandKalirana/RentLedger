@@ -142,21 +142,10 @@ export default function SettingsPage() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
-        <Field label="Full name" error={errors.fullName?.message}>
-          <input {...register("fullName")} className="input" />
-        </Field>
-
-        <Field label="Business name">
-          <input {...register("businessName")} className="input" />
-        </Field>
-
-        <Field label="Phone">
-          <input {...register("phone")} className="input" />
-        </Field>
-
-        <Field label="UPI ID" error={errors.upiId?.message}>
-          <input {...register("upiId")} className="input" />
-        </Field>
+        <Field label="Full name" {...register("fullName")} error={errors.fullName?.message} />
+        <Field label="Business name (optional)" {...register("businessName")} error={errors.businessName?.message} />
+        <Field label="Phone (optional)" {...register("phone")} error={errors.phone?.message} />
+        <Field label="UPI ID" placeholder="yourname@bank" {...register("upiId")} error={errors.upiId?.message} />
 
         <div className="flex items-center gap-3">
           <Button type="submit" disabled={isSubmitting}>

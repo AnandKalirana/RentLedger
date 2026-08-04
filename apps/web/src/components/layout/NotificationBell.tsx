@@ -29,8 +29,12 @@ export function NotificationBell() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   async function loadNotifications() {
-    const res = await api.get<{ data: Notification[] }>("/notifications");
-    setNotifications(res.data.data);
+    try {
+      const res = await api.get<{ data: Notification[] }>("/notifications");
+      setNotifications(res.data.data);
+    } catch {
+      // Ignore background notification fetch errors when unauthenticated
+    }
   }
 
   useEffect(() => {
