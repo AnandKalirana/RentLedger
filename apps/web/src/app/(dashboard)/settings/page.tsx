@@ -48,22 +48,22 @@ export default function SettingsPage() {
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   async function loadProfile() {
-  setLoading(true);
-  try {
-    const res = await api.get<{ data: Profile }>("/profile");
-    setProfile(res.data.data);
-    reset({
-      fullName: res.data.data.fullName,
-      businessName: res.data.data.businessName ?? "",
-      phone: res.data.data.phone ?? "",
-      upiId: res.data.data.upiId ?? "",
-    });
-  } catch (err) {
-    setSaveMessage(err instanceof Error ? err.message : "Failed to load profile");
-  } finally {
-    setLoading(false);
+    setLoading(true);
+    try {
+      const res = await api.get<{ data: Profile }>("/profile");
+      setProfile(res.data.data);
+      reset({
+        fullName: res.data.data.fullName,
+        businessName: res.data.data.businessName ?? "",
+        phone: res.data.data.phone ?? "",
+        upiId: res.data.data.upiId ?? "",
+      });
+    } catch (err) {
+      setSaveMessage(err instanceof Error ? err.message : "Failed to load profile");
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   useEffect(() => {
     loadProfile();
@@ -130,37 +130,41 @@ export default function SettingsPage() {
                 ref={fileInputRef}
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
-                className="hidden"
                 onChange={handleQrUpload}
-                disabled={qrUploading}
+                className="hidden"
               />
             </label>
-            <p className="mt-1.5 text-xs text-[var(--ink-soft)]">JPG, PNG, or WEBP · max 5MB</p>
-            {qrError && <p className="mt-1 text-xs text-[var(--danger)]">{qrError}</p>}
+            {qrError && (
+              <p className="mt-2 text-xs text-red-500">{qrError}</p>
+            )}
           </div>
         </div>
       </div>
 
-      <form className="mt-6 space-y-4 rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6" onSubmit={handleSubmit(onSubmit)}>
-        <h2 className="text-sm font-semibold">Profile</h2>
-        <Field label="Full name" {...register("fullName")} error={errors.fullName?.message} />
-        <Field
-          label="Business / display name (optional)"
-          {...register("businessName")}
-          error={errors.businessName?.message}
-        />
-        <Field label="Phone (optional)" {...register("phone")} error={errors.phone?.message} />
-        <Field
-          label="UPI ID"
-          placeholder="yourname@bank"
-          {...register("upiId")}
-          error={errors.upiId?.message}
-        />
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+        <Field label="Full name" error={errors.fullName?.message}>
+          <input {...register("fullName")} className="input" />
+        </Field>
+
+        <Field label="Business name">
+          <input {...register("businessName")} className="input" />
+        </Field>
+
+        <Field label="Phone">
+          <input {...register("phone")} className="input" />
+        </Field>
+
+        <Field label="UPI ID" error={errors.upiId?.message}>
+          <input {...register("upiId")} className="input" />
+        </Field>
+
         <div className="flex items-center gap-3">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Saving…" : "Save changes"}
           </Button>
-          {saveMessage && <span className="text-sm text-[var(--stamp)]">{saveMessage}</span>}
+          {saveMessage && (
+            <span className="text-sm text-[var(--ink-soft)]">{saveMessage}</span>
+          )}
         </div>
       </form>
     </div>

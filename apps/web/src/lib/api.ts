@@ -1,54 +1,76 @@
 import axios, { AxiosError } from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "/api";
 
-// Falls back to localhost:4000 if NEXT_PUBLIC_API_URL is missing the origin
-// (e.g. accidentally set to a relative path like "/api") — without this guard,
-// stripping "/api" from "/api" collapses to "", and every "${apiOrigin}${path}"
-// silently becomes a same-origin relative URL instead of pointing at the API.
-const strippedOrigin = API_BASE_URL.replace(/\/api\/?$/, "");
-export const apiOrigin = strippedOrigin || "http://localhost:4000";
+export const apiOrigin = API_BASE_URL.replace(/\/api\/?$/, "");
+
+export function resolveFileUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${apiOrigin}${url.startsWith("/") ? "" : "/"}${url}`;
+}
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true, // sends the httpOnly auth cookies set by the API
+  withCredentials: true,
+});
+
+// Attach Bearer token from localStorage as fallback for cross-domain requests
+// where third-party httpOnly cookies may be blocked by browser policies.
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("accessToken");
+    if (token && !config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
 });
 
 let refreshPromise: Promise<unknown> | null = null;
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Automatically capture and store new accessToken if returned in response
+    if (typeof window !== "undefined" && response.data?.data?.accessToken) {
+      localStorage.setItem("accessToken", response.data.data.accessToken);
+    }
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as (typeof error.config & { _retried?: boolean }) | undefined;
 
     const isAuthError = error.response?.status === 401;
-    const isAuthRoute = originalRequest?.url?.includes("/auth/login") || originalRequest?.url?.includes("/auth/refresh");
+    const isAuthRoute =
+      originalRequest?.url?.includes("/auth/login") || originalRequest?.url?.includes("/auth/refresh");
 
-    // On a 401 from any route other than login/refresh itself, try refreshing
-    // the access token once and retrying the original request. The access
-    // token is short-lived (15 min) by design — this is what makes that
-    // invisible to the user instead of logging them out every 15 minutes.
+    // On a 401 from any route other than login/refresh itself, try refreshing the session
     if (isAuthError && !isAuthRoute && originalRequest && !originalRequest._retried) {
       originalRequest._retried = true;
       try {
-        // Multiple requests can 401 around the same time (e.g. a page firing
-        // several calls at once) — share one in-flight refresh instead of
-        // firing a refresh call per failed request.
         refreshPromise ??= api.post("/auth/refresh");
-        await refreshPromise;
+        const refreshRes = (await refreshPromise) as { data?: { data?: { accessToken?: string } } };
         refreshPromise = null;
+
+        const newToken = refreshRes?.data?.data?.accessToken;
+        if (newToken && typeof window !== "undefined") {
+          localStorage.setItem("accessToken", newToken);
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        }
         return api(originalRequest);
-      } catch (refreshError) {
+      } catch {
         refreshPromise = null;
-        // Refresh token is also invalid/expired — genuinely logged out.
         if (typeof window !== "undefined") {
+          localStorage.removeItem("accessToken");
           window.location.href = "/login";
         }
         return Promise.reject(new Error("Session expired. Please log in again."));
       }
     }
 
-    const message = (error.response?.data as { message?: string } | undefined)?.message ?? "Something went wrong. Please try again.";
+    const message =
+      (error.response?.data as { message?: string } | undefined)?.message ??
+      "Something went wrong. Please try again.";
     return Promise.reject(new Error(message));
   }
 );

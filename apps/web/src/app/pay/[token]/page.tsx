@@ -44,7 +44,7 @@ export default function PublicPaymentPage() {
   useEffect(() => {
     api
       .get<{ data: PublicLinkInfo }>(`/public/payment-links/${params.token}`)
-      .then((res) => {
+      .then((res: { data: { data: PublicLinkInfo } }) => {
         const data = res.data.data;
         setInfo(data);
         if (data.tenant) {
@@ -63,7 +63,7 @@ export default function PublicPaymentPage() {
           QRCode.toDataURL(upiUrl, { margin: 1, width: 220 }).then(setQrDataUrl);
         }
       })
-      .catch((err) => setError(err instanceof Error ? err.message : "This link isn't available"))
+      .catch((err: unknown) => setError(err instanceof Error ? err.message : "This link isn't available"))
       .finally(() => setLoading(false));
   }, [params.token]);
 

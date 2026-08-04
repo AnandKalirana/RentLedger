@@ -43,7 +43,7 @@ export default function PaymentsPage() {
   }
 
   useEffect(() => {
-    const timeout = setTimeout(loadPayments, 250); // debounce search
+    const timeout = setTimeout(loadPayments, 250);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, search]);
@@ -115,8 +115,7 @@ export default function PaymentsPage() {
                   <Badge status={payment.status} />
                 </div>
                 <p className="mt-1 text-sm text-[var(--ink-soft)]">
-                  ₹{payment.amount.toLocaleString("en-IN")} · {payment.billingMonth}/{payment.billingYear} ·{" "}
-                  submitted {new Date(payment.createdAt).toLocaleDateString("en-IN")}
+                  Rs {payment.amount.toLocaleString("en-IN")} - {payment.billingMonth}/{payment.billingYear} - submitted {new Date(payment.createdAt).toLocaleDateString("en-IN")}
                 </p>
                 {payment.status === "REJECTED" && payment.rejectionReason && (
                   <p className="mt-1 text-xs text-[var(--danger)]">Reason: {payment.rejectionReason}</p>

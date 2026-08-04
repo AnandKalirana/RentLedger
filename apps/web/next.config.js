@@ -1,12 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@rentledger/shared"],
   images: {
-    remotePatterns: [
-      // Add your cloud storage / CDN hostname here once file storage is configured,
-      // e.g. { protocol: "https", hostname: "your-bucket.s3.amazonaws.com" }
-    ],
+    remotePatterns: [],
+  },
+  async rewrites() {
+    const target = process.env.API_PROXY_TARGET;
+    if (!target) return [];
+    return [
+      { source: "/api/:path*", destination: `${target}/api/:path*` },
+      { source: "/uploads/:path*", destination: `${target}/uploads/:path*` },
+    ];
   },
 };
 
