@@ -8,16 +8,20 @@ import { ApiError } from "@/utils/ApiError";
 
 let supabaseClient: SupabaseClient | null = null;
 
-function getSupabaseClient(): SupabaseClient | null {
+function getSupabaseClient(): SupabaseClient {
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
-    return null;
+    throw ApiError.badRequest(
+      "STORAGE_DRIVER is set to 'supabase' but SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variable is missing on Render."
+    );
   }
   if (!supabaseClient) {
     let url = env.SUPABASE_URL.trim();
     if (!/^https?:\/\//i.test(url)) {
       url = `https://${url}`;
     }
-    supabaseClient = createClient(url, env.SUPABASE_SERVICE_ROLE_KEY);
+    supabaseClient = createClient(url, env.SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { persistSession: false },
+    });
   }
   return supabaseClient;
 }
@@ -33,7 +37,7 @@ function buildFilename(prefix: string, originalName: string): string {
  * frontend should use to load it.
  *
  * - supabase mode: uploads to a Supabase Storage bucket and returns its public
- *   URL. If Supabase is unconfigured or fails, falls back gracefully to local disk.
+ *   URL. If Supabase is unconfigured or returns an error, throws a detailed ApiError.
  * - local mode: writes to disk and returns relative /uploads path.
  */
 export async function persistUploadedFile(
@@ -48,33 +52,29 @@ export async function persistUploadedFile(
 
   if (env.STORAGE_DRIVER === "supabase") {
     const client = getSupabaseClient();
-    if (client) {
-      const bucket = env.SUPABASE_STORAGE_BUCKET || "uploads";
-      try {
-        const { error } = await client.storage.from(bucket).upload(filename, file.buffer, {
-          contentType: file.mimetype || "image/png",
-          upsert: true,
-        });
+    const bucket = env.SUPABASE_STORAGE_BUCKET || "uploads";
 
-        if (!error) {
-          const { data } = client.storage.from(bucket).getPublicUrl(filename);
-          if (data?.publicUrl) {
-            return data.publicUrl;
-          }
-        } else {
-          console.error(`Supabase upload error for bucket '${bucket}':`, error.message);
-        }
-      } catch (err) {
-        console.error("Supabase storage connection error:", err);
-      }
-    } else {
-      console.warn(
-        "STORAGE_DRIVER is set to 'supabase' but SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing. Falling back to local storage."
+    const { error } = await client.storage.from(bucket).upload(filename, file.buffer, {
+      contentType: file.mimetype || "image/png",
+      upsert: true,
+      cacheControl: "3600",
+    });
+
+    if (error) {
+      throw ApiError.badRequest(
+        `Supabase Storage upload failed: ${error.message} (Bucket: '${bucket}'). Please verify the bucket exists and is marked Public in Supabase Dashboard.`
       );
     }
+
+    const { data } = client.storage.from(bucket).getPublicUrl(filename);
+    if (!data || !data.publicUrl) {
+      throw ApiError.badRequest("Failed to generate public URL from Supabase Storage.");
+    }
+
+    return data.publicUrl;
   }
 
-  // Fallback to local disk storage
+  // Local disk storage (dev / fallback)
   await fs.mkdir(UPLOAD_DIR, { recursive: true });
   await fs.writeFile(path.join(UPLOAD_DIR, filename), file.buffer);
   return `/uploads/${filename}`;
