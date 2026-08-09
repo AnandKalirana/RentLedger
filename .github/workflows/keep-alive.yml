@@ -1,0 +1,13 @@
+name: Keep Render API warm
+
+on:
+  schedule:
+    - cron: "*/10 * * * *" # every 10 minutes
+  workflow_dispatch: {} # lets you trigger it manually from the Actions tab too
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: curl -sf https://rentledger-9sie.onrender.com/health || echo "Ping failed (service may be cold-starting)"
