@@ -176,8 +176,48 @@ export async function streamTenantPaymentHistoryPdf(landlordId: string, tenantId
     });
   }
 
-  // Outer border around the whole table (header + all rows)
-  const tableTop = y - dataRowHeight * tenant.payments.length - headerHeight;
+  // ── Total row ────────────────────────────────────────────────────────────
+  if (tenant.payments.length > 0) {
+    y = ensureSpace(y, dataRowHeight + 2);
+    // Thin separator line above the total
+    doc
+      .strokeColor(STAMP)
+      .lineWidth(1)
+      .moveTo(tableLeft, y)
+      .lineTo(tableLeft + pageWidth, y)
+      .stroke();
+
+    const verifiedTotal = tenant.payments
+      .filter((p: (typeof tenant.payments)[0]) => p.status === "VERIFIED")
+      .reduce((sum: number, p: (typeof tenant.payments)[0]) => sum + Number(p.amount), 0);
+    const grandTotal = tenant.payments
+      .reduce((sum: number, p: (typeof tenant.payments)[0]) => sum + Number(p.amount), 0);
+
+    doc.rect(tableLeft, y, pageWidth, dataRowHeight + 6).fill(STAMP_SOFT);
+
+    doc.fillColor(STAMP).font("Helvetica-Bold").fontSize(9);
+    doc.text("TOTAL (all periods)", columnX(0) + 8, y + 8, {
+      width: columns[0].width + columns[1].width - 16,
+      align: "left",
+    });
+    doc.text(formatCurrency(grandTotal), columnX(1) + 8, y + 8, {
+      width: columns[1].width - 16,
+      align: "right",
+    });
+
+    doc.fillColor(INK_SOFT).font("Helvetica").fontSize(8);
+    doc.text(
+      `Verified: ${formatCurrency(verifiedTotal)}`,
+      columnX(2) + 8, y + 10,
+      { width: columns[2].width + columns[3].width + columns[4].width - 16, align: "left" }
+    );
+
+    y += dataRowHeight + 6;
+  }
+
+  // Outer border around the whole table (header + all rows + total)
+  const tableTop = y - (tenant.payments.length > 0 ? dataRowHeight + 6 : 0)
+    - dataRowHeight * tenant.payments.length - headerHeight;
   doc
     .strokeColor(LINE)
     .lineWidth(1)

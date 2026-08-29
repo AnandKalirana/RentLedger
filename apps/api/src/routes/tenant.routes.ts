@@ -4,6 +4,8 @@ import { authenticate } from "@/middleware/authenticate";
 import { validate } from "@/middleware/validate";
 import { createTenantSchema, tenantIdParamSchema, updateTenantSchema } from "@/validators/tenant.validator";
 
+import { uploadLeaseDocument } from "@/middleware/upload";
+
 const router = Router();
 
 router.use(authenticate);
@@ -18,5 +20,6 @@ router.patch(
   tenantController.update
 );
 router.delete("/:id", validate(tenantIdParamSchema, "params"), tenantController.remove);
+router.post("/:id/lease", validate(tenantIdParamSchema, "params"), uploadLeaseDocument, tenantController.uploadLease);
 
 export default router;

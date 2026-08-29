@@ -14,5 +14,6 @@ router.patch(
   validate(z.object({ id: z.string().cuid() }), "params"),
   notificationController.markRead
 );
+router.post("/reminders/send", notificationController.triggerReminders);
 
 export default router;

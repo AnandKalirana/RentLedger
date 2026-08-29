@@ -44,3 +44,12 @@ export async function deleteTenant(landlordId: string, tenantId: string) {
   await getTenantById(landlordId, tenantId);
   await prisma.tenant.delete({ where: { id: tenantId } });
 }
+
+export async function uploadLeaseDocument(landlordId: string, tenantId: string, url: string) {
+  await getTenantById(landlordId, tenantId);
+  return prisma.tenant.update({
+    where: { id: tenantId },
+    data: { leaseDocumentUrl: url },
+  });
+}
+

@@ -65,7 +65,7 @@ async function uploadToSupabase(filename: string, file: Express.Multer.File): Pr
 
 export async function persistUploadedFile(
   file: Express.Multer.File,
-  prefix: "proof" | "qr"
+  prefix: "proof" | "qr" | "lease"
 ): Promise<string> {
   const filename = buildFilename(prefix, file.originalname);
 

@@ -1,40 +1,59 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { StatCard } from "@/components/dashboard/StatCard";
-import type { DashboardSummaryDTO } from "@rentledger/shared";
+import { SkeletonStatGrid } from "@/components/ui/Skeleton";
+import { OnboardingBanner } from "@/components/dashboard/OnboardingBanner";
+import type { DashboardSummaryDTO, TenantDTO } from "@rentledger/shared";
 
 export default function DashboardPage() {
-  const [summary, setSummary] = useState<DashboardSummaryDTO | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: summary, isLoading: summaryLoading, error: queryError } = useQuery({
+    queryKey: ["dashboard-summary"],
+    queryFn: async () => {
+      const res = await api.get<{ data: DashboardSummaryDTO }>("/dashboard/summary");
+      return res.data.data;
+    },
+    refetchOnMount: "always",
+  });
 
-  useEffect(() => {
-    api
-      .get<{ data: DashboardSummaryDTO }>("/dashboard/summary")
-      .then((res) => setSummary(res.data.data))
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load dashboard"))
-      .finally(() => setLoading(false));
-  }, []);
+  // Use the tenant list as the definitive source-of-truth for whether the
+  // landlord has any real data. The summary query can fail or be stale, but
+  // /tenants is fast and always accurate.
+  const { data: tenants = [], isLoading: tenantsLoading } = useQuery({
+    queryKey: ["tenants"],
+    queryFn: async () => {
+      const res = await api.get<{ data: TenantDTO[] }>("/tenants");
+      return res.data.data;
+    },
+    refetchOnMount: "always",
+  });
+
+  const loading = summaryLoading || tenantsLoading;
+  const error = queryError ? (queryError instanceof Error ? queryError.message : "Failed to load dashboard") : null;
+
+  // The banner disappears the moment at least one tenant exists.
+  const hasRealData = tenants.length > 0;
 
   return (
     <div className="mx-auto max-w-5xl px-8 py-8">
       <h1 className="text-xl font-semibold tracking-tight">Overview</h1>
       <p className="mt-1 text-sm text-[var(--ink-soft)]">
-        A live summary of this month's rent collection.
+        A live summary of this month&apos;s rent collection.
       </p>
 
-      {loading && <p className="mt-8 text-sm text-[var(--ink-soft)]">Loading…</p>}
+      {/* Demo onboarding banner — shown only when no tenants exist yet */}
+      {!loading && !hasRealData && <OnboardingBanner />}
 
-      {error && !loading && (
+      {loading && <SkeletonStatGrid />}
+
+      {error && !summaryLoading && (
         <div className="mt-8 rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6 text-sm text-[var(--ink-soft)]">
-          Dashboard data isn't available yet — the summary endpoint is scaffolded in the API and
-          will return real figures once implemented.
+          Dashboard summary is unavailable right now.
         </div>
       )}
 
-      {summary && !loading && (
+      {summary && !summaryLoading && (
         <>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label="Revenue this month" value={`₹${summary.currentMonthRevenue.toLocaleString("en-IN")}`} />
@@ -45,7 +64,9 @@ export default function DashboardPage() {
 
           <h2 className="mt-10 text-base font-semibold">Recent transactions</h2>
           {summary.recentTransactions.length === 0 ? (
-            <p className="mt-3 text-sm text-[var(--ink-soft)]">No payments submitted yet.</p>
+            <div className="mt-4 rounded-lg border border-dashed border-[var(--line)] bg-[var(--paper-raised)] p-8 text-center text-sm text-[var(--ink-soft)]">
+              No payments submitted yet. Once tenants pay via a payment link, they&apos;ll appear here.
+            </div>
           ) : (
             <div className="mt-3 overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--paper-raised)]">
               <table className="w-full text-sm">

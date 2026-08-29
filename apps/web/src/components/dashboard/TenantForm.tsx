@@ -63,15 +63,24 @@ export function TenantForm({
           error={errors.monthlyRent?.message}
         />
         <Field
+          label="Monthly maintenance (₹)"
+          type="number"
+          step="0.01"
+          {...register("monthlyMaintenance" as any)}
+          error={(errors as any).monthlyMaintenance?.message}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <Field
           label="Security deposit (₹)"
           type="number"
           step="0.01"
           {...register("securityDeposit")}
           error={errors.securityDeposit?.message}
         />
+        <Field label="Move-in date" type="date" {...register("moveInDate")} error={errors.moveInDate?.message} />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Move-in date" type="date" {...register("moveInDate")} error={errors.moveInDate?.message} />
         <Field
           label="Rent due day"
           type="number"
@@ -80,6 +89,7 @@ export function TenantForm({
           {...register("rentDueDay")}
           error={errors.rentDueDay?.message}
         />
+        <div />
       </div>
       <div>
         <label className="block text-sm font-medium text-[var(--ink)]">Notes (optional)</label>

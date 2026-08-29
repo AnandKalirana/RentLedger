@@ -8,6 +8,7 @@ import exportRoutes from "@/routes/export.routes";
 import publicRoutes from "@/routes/public.routes";
 import notificationRoutes from "@/routes/notification.routes";
 import profileRoutes from "@/routes/profile.routes";
+import maintenanceRoutes from "@/routes/maintenance.routes";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use("/exports", exportRoutes);
 router.use("/public", publicRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/profile", profileRoutes);
+router.use("/maintenance", maintenanceRoutes);
 
 export default router;

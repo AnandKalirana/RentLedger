@@ -6,6 +6,7 @@ export const createTenantSchema = z.object({
   mobileNumber: z.string().trim().min(7).max(15),
   email: z.string().trim().toLowerCase().email().optional(),
   monthlyRent: z.coerce.number().positive(),
+  monthlyMaintenance: z.coerce.number().min(0).optional().default(0),
   securityDeposit: z.coerce.number().min(0).default(0),
   moveInDate: z.coerce.date(),
   rentDueDay: z.coerce.number().int().min(RENT_DUE_DAY_MIN).max(RENT_DUE_DAY_MAX).default(1),

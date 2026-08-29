@@ -4,6 +4,8 @@ import { prisma } from "@/config/database";
 import { ApiError } from "@/utils/ApiError";
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from "@/utils/jwt";
 import { LoginInput, RegisterInput } from "@/validators/auth.validator";
+import { sendPasswordResetEmail } from "@/services/email.service";
+
 
 const BCRYPT_ROUNDS = 12;
 
@@ -102,3 +104,53 @@ async function issueTokenPair(landlordId: string, email: string) {
 
   return { accessToken, refreshToken, landlord };
 }
+
+export async function requestPasswordReset(email: string) {
+  const landlord = await prisma.landlord.findUnique({ where: { email } });
+  if (!landlord) {
+    // Return silently to prevent user enumeration attacks
+    return { success: true };
+  }
+
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  const hashedToken = hashToken(rawToken);
+  const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour expiry
+
+  await prisma.landlord.update({
+    where: { id: landlord.id },
+    data: {
+      passwordResetToken: hashedToken,
+      passwordResetExpiry: expiry,
+    },
+  });
+
+  // Send the reset email
+  await sendPasswordResetEmail(email, rawToken);
+
+  return { success: true };
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  const hashedToken = hashToken(token);
+  const landlord = await prisma.landlord.findUnique({
+    where: { passwordResetToken: hashedToken },
+  });
+
+  if (!landlord || !landlord.passwordResetExpiry || landlord.passwordResetExpiry < new Date()) {
+    throw ApiError.badRequest("Invalid or expired password reset token");
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+
+  await prisma.landlord.update({
+    where: { id: landlord.id },
+    data: {
+      passwordHash,
+      passwordResetToken: null,
+      passwordResetExpiry: null,
+    },
+  });
+
+  return { success: true };
+}
+

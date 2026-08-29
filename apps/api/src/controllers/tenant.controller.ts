@@ -27,3 +27,13 @@ export const remove = asyncHandler(async (req: Request, res: Response) => {
   await tenantService.deleteTenant(req.landlord!.id, req.params.id);
   return sendSuccess(res, { message: "Tenant deleted" });
 });
+
+export const uploadLease = asyncHandler(async (req: Request, res: Response) => {
+  const { ApiError } = await import("@/utils/ApiError");
+  const { persistUploadedFile } = await import("@/utils/storage");
+  if (!req.file) throw ApiError.badRequest("Lease agreement document file is required");
+  const url = await persistUploadedFile(req.file, "lease");
+  const tenant = await tenantService.uploadLeaseDocument(req.landlord!.id, req.params.id, url);
+  return sendSuccess(res, tenant);
+});
+

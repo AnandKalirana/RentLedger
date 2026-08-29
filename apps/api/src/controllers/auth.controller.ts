@@ -66,3 +66,18 @@ export const me = asyncHandler(async (req: Request, res: Response) => {
   // req.landlord is populated by the `authenticate` middleware
   return sendSuccess(res, { landlord: req.landlord });
 });
+
+export const requestPasswordReset = asyncHandler(async (req: Request, res: Response) => {
+  const { email } = req.body;
+  if (!email) throw ApiError.badRequest("Email is required");
+  const result = await authService.requestPasswordReset(email);
+  return sendSuccess(res, result);
+});
+
+export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { token, newPassword } = req.body;
+  if (!token || !newPassword) throw ApiError.badRequest("Token and new password are required");
+  const result = await authService.resetPassword(token, newPassword);
+  return sendSuccess(res, result);
+});
+

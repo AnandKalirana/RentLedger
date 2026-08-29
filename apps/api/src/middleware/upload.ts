@@ -30,3 +30,15 @@ export const uploadQrImage = multer({
   fileFilter,
   limits: { fileSize: MAX_PROOF_FILE_SIZE_BYTES, files: 1 },
 }).single("qrImage");
+
+const leaseMimes = [...ALLOWED_PROOF_MIME_TYPES, "application/pdf"];
+export const uploadLeaseDocument = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (!leaseMimes.includes(file.mimetype)) {
+      return cb(ApiError.badRequest("Only PDF, JPG, PNG, or WEBP documents are allowed") as unknown as Error);
+    }
+    cb(null, true);
+  },
+  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
+}).single("leaseDocument");

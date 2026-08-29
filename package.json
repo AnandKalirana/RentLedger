@@ -8,8 +8,10 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
     "dev:api": "npm run dev --workspace=apps/api",
     "dev:web": "npm run dev --workspace=apps/web",
+    "build": "npm run build:shared && npm run build:database && npm run build:api && npm run build:web",
     "build:shared": "npm run build --workspace=packages/shared",
     "build:database": "npm run build --workspace=packages/database",
     "build:api": "npm run build --workspace=apps/api",
@@ -24,6 +26,7 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.9"
+    "@types/node": "^20.14.9",
+    "concurrently": "^10.0.4"
   }
 }

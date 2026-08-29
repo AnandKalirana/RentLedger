@@ -1,9 +1,11 @@
 import { createApp } from "@/app";
 import { env } from "@/config/env";
 import { connectDatabase, disconnectDatabase } from "@/config/database";
+import { initReminderCron } from "@/cron/reminder.cron";
 
 async function main() {
   await connectDatabase();
+  initReminderCron();
 
   const app = createApp();
   const server = app.listen(env.PORT, () => {

@@ -18,10 +18,12 @@ export interface TenantDTO {
   mobileNumber: string;
   email?: string | null;
   monthlyRent: number;
+  monthlyMaintenance?: number;
   securityDeposit: number;
   moveInDate: string; // ISO date
   rentDueDay: number;
   status: TenantStatus;
+  leaseDocumentUrl?: string | null;
   notes?: string | null;
   createdAt: string;
 }
