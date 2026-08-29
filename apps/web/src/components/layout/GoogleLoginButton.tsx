@@ -10,15 +10,12 @@ export function GoogleLoginButton() {
   async function handleGoogleLogin() {
     setLoading(true);
     try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      if (!supabaseUrl) {
-        info("Google Login: Supabase OAuth URL not configured in environment variables. Starting minimal OAuth flow.");
-        setTimeout(() => setLoading(false), 1200);
-        return;
-      }
-      // Redirect to Supabase Auth provider
+      const supabaseUrl =
+        process.env.NEXT_PUBLIC_SUPABASE_URL || "https://oylkvlqluthrxdmzefod.supabase.co";
+      
+      const redirectTo = `${window.location.origin}/dashboard`;
       window.location.href = `${supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(
-        window.location.origin + "/dashboard"
+        redirectTo
       )}`;
     } catch (err) {
       error(err instanceof Error ? err.message : "Google login failed");
