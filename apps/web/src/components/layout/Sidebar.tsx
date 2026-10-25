@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { LayoutDashboard, Users, Receipt, Link2, Settings, LogOut, Wrench } from "lucide-react";
+import { LayoutDashboard, Users, Receipt, Link2, Settings, LogOut, Wrench, Sparkles } from "lucide-react";
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
@@ -11,6 +11,7 @@ const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/tenants", label: "Tenants", icon: Users },
   { href: "/payments", label: "Payments", icon: Receipt },
+  { href: "/assistant", label: "AI Assistant", icon: Sparkles },
   { href: "/maintenance", label: "Maintenance", icon: Wrench },
   { href: "/payment-links", label: "Payment links", icon: Link2 },
   { href: "/settings", label: "Settings", icon: Settings },

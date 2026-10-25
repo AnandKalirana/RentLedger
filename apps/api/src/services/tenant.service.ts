@@ -1,6 +1,7 @@
 import { prisma } from "@/config/database";
 import { ApiError } from "@/utils/ApiError";
 import { CreateTenantInput, UpdateTenantInput } from "@/validators/tenant.validator";
+import { ingestTenant, deleteTenantChunks } from "@/rag/ingest.service";
 
 // Every function here takes landlordId explicitly and uses it in the `where`
 // clause — never trust a tenant id alone. This is what makes the app safe for
@@ -25,31 +26,46 @@ export async function getTenantById(landlordId: string, tenantId: string) {
 }
 
 export async function createTenant(landlordId: string, input: CreateTenantInput) {
-  return prisma.tenant.create({
+  const tenant = await prisma.tenant.create({
     data: { ...input, landlordId },
   });
+  ingestTenant(tenant.id, landlordId).catch((err) =>
+    console.error("[RAG] Failed to ingest tenant:", err)
+  );
+  return tenant;
 }
 
 export async function updateTenant(landlordId: string, tenantId: string, input: UpdateTenantInput) {
   // findFirst (not update directly) so we return a proper 404 instead of a
   // Prisma "record not found" error when the tenant belongs to another landlord.
   await getTenantById(landlordId, tenantId);
-  return prisma.tenant.update({
+  const updated = await prisma.tenant.update({
     where: { id: tenantId },
     data: input,
   });
+  ingestTenant(tenantId, landlordId).catch((err) =>
+    console.error("[RAG] Failed to re-ingest tenant:", err)
+  );
+  return updated;
 }
 
 export async function deleteTenant(landlordId: string, tenantId: string) {
   await getTenantById(landlordId, tenantId);
   await prisma.tenant.delete({ where: { id: tenantId } });
+  deleteTenantChunks(tenantId, landlordId).catch((err) =>
+    console.error("[RAG] Failed to delete tenant chunks:", err)
+  );
 }
 
 export async function uploadLeaseDocument(landlordId: string, tenantId: string, url: string) {
   await getTenantById(landlordId, tenantId);
-  return prisma.tenant.update({
+  const updated = await prisma.tenant.update({
     where: { id: tenantId },
     data: { leaseDocumentUrl: url },
   });
+  ingestTenant(tenantId, landlordId).catch((err) =>
+    console.error("[RAG] Failed to re-ingest tenant:", err)
+  );
+  return updated;
 }
 

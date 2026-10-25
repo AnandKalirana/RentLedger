@@ -83,8 +83,14 @@ export async function logout(refreshToken: string) {
 }
 
 async function issueTokenPair(landlordId: string, email: string) {
-  const accessToken = signAccessToken({ landlordId, email });
-  const refreshToken = signRefreshToken({ landlordId, email });
+  // Fetch the role from the DB — it is never accepted from client input.
+  const landlord = await prisma.landlord.findUniqueOrThrow({
+    where: { id: landlordId },
+    select: { id: true, email: true, fullName: true, businessName: true, role: true },
+  });
+
+  const accessToken = signAccessToken({ landlordId, email, role: landlord.role });
+  const refreshToken = signRefreshToken({ landlordId, email, role: landlord.role });
 
   const decoded = verifyRefreshToken(refreshToken);
   const expiresAt = new Date((decoded as unknown as { exp: number }).exp * 1000);
@@ -95,11 +101,6 @@ async function issueTokenPair(landlordId: string, email: string) {
       tokenHash: hashToken(refreshToken),
       expiresAt,
     },
-  });
-
-  const landlord = await prisma.landlord.findUniqueOrThrow({
-    where: { id: landlordId },
-    select: { id: true, email: true, fullName: true, businessName: true },
   });
 
   return { accessToken, refreshToken, landlord };

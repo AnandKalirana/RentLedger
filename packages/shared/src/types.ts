@@ -5,11 +5,25 @@ export type PaymentStatus = "PENDING" | "VERIFIED" | "REJECTED";
 export type PaymentLinkType = "REUSABLE" | "TENANT_SPECIFIC";
 export type TenantStatus = "ACTIVE" | "INACTIVE";
 
+/**
+ * Role hierarchy — LANDLORD has the most access, TENANT_VIEWER the least.
+ * Encoded as a numeric ordering so permission checks can use simple <= comparisons.
+ */
+export type UserRole = "LANDLORD" | "MANAGER" | "TENANT_VIEWER";
+
+/** Numeric order — lower number = more access. */
+export const ROLE_ORDER: Record<UserRole, number> = {
+  LANDLORD: 0,
+  MANAGER: 1,
+  TENANT_VIEWER: 2,
+} as const;
+
 export interface AuthUser {
   id: string;
   email: string;
   fullName: string;
   businessName?: string | null;
+  role: UserRole;
 }
 
 export interface TenantDTO {
@@ -76,3 +90,25 @@ export interface ApiSuccessResponse<T> {
 }
 
 export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
+
+// ---------------------------------------------------------------------------
+// RAG & Assistant Types
+// ---------------------------------------------------------------------------
+
+export type ChunkSourceType = "PAYMENT" | "TENANT_NOTE" | "REJECTION_REASON";
+export type ChunkVisibility = "LANDLORD" | "MANAGER" | "TENANT_VIEWER";
+
+export interface ChatSourceCitation {
+  chunkId: string;
+  sourceType: ChunkSourceType;
+  sourceId: string;
+  tenantId?: string | null;
+  snippet: string;
+}
+
+export interface ChatMessageDTO {
+  role: "user" | "assistant";
+  content: string;
+  citations?: ChatSourceCitation[];
+  createdAt?: string;
+}

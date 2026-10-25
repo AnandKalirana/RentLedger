@@ -34,6 +34,15 @@ enum TenantStatus {
   INACTIVE // Moved out / lease ended, kept for historical records
 }
 
+// Roles: LANDLORD = full owner, MANAGER = can do everything except billing/account,
+// TENANT_VIEWER = read-only view of tenants assigned to them.
+// Existing users default to LANDLORD so no data migration is required.
+enum UserRole {
+  LANDLORD
+  MANAGER
+  TENANT_VIEWER
+}
+
 // ---------------------------------------------------------------------------
 // Landlord (application user / account owner)
 // ---------------------------------------------------------------------------
@@ -47,6 +56,10 @@ model Landlord {
   businessName String? // Optional display name shown on tenant-facing payment page
   upiId        String? // Landlord's UPI VPA, used to render the QR code on the payment page
   upiQrImageUrl String? // Optional pre-generated QR image (cloud storage URL)
+
+  // Role: set at account creation, never accepted from client input.
+  // Existing rows default to LANDLORD via the migration default.
+  role         UserRole @default(LANDLORD)
 
   isEmailVerified Boolean @default(false)
   emailVerifiedAt DateTime?
@@ -239,5 +252,81 @@ model MaintenanceRecord {
   @@index([tenantId])
   @@index([landlordId, billingYear, billingMonth])
   @@map("maintenance_records")
+}
+
+// ---------------------------------------------------------------------------
+// AuditLog — every retrieval and sensitive action is logged here
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  landlordId   String
+  actorId      String   // who performed the action (= landlordId for now, extensible to staff)
+  actorRole    UserRole
+  action       String   // e.g. "RAG_RETRIEVE", "CHAT_QUERY", "PAYMENT_VERIFY"
+  resourceType String   // e.g. "DocumentChunk", "Payment", "Tenant"
+  resourceIds  String[] // array of affected IDs
+  query        String?  // natural language query, if applicable
+
+  createdAt DateTime @default(now())
+
+  @@index([landlordId, createdAt])
+  @@map("audit_logs")
+}
+
+// ---------------------------------------------------------------------------
+// Enums for DocumentChunk
+// ---------------------------------------------------------------------------
+
+// The type of source data this chunk was generated from
+enum ChunkSourceType {
+  PAYMENT          // a single payment record
+  TENANT_NOTE      // notes field on a tenant profile
+  REJECTION_REASON // rejection reason on a payment
+}
+
+// Minimum role required to see this chunk in retrieval results.
+// Must map to UserRole — lower number (LANDLORD=0) means most restrictive if
+// we use "visible to this role and all more-privileged roles" semantics:
+//   LANDLORD => only LANDLORD can see it
+//   MANAGER  => LANDLORD and MANAGER can see it
+//   TENANT_VIEWER => everyone can see it
+enum ChunkVisibility {
+  LANDLORD      // only the owning landlord
+  MANAGER       // landlord + manager
+  TENANT_VIEWER // all authenticated roles
+}
+
+// ---------------------------------------------------------------------------
+// DocumentChunk — vector store for RAG retrieval
+// ---------------------------------------------------------------------------
+
+model DocumentChunk {
+  id         String   @id @default(cuid())
+  landlordId String   // denormalized, required for per-landlord filtering in vector search
+
+  tenantId   String?  // nullable — some chunks relate to a payment not tied to a named tenant
+
+  sourceType  ChunkSourceType
+  sourceId    String           // FK-like: the Prisma record ID the chunk was derived from
+  chunkIndex  Int              @default(0) // 0-based position when a source produces multiple chunks
+
+  content     String           // plain-text chunk content fed into the LLM context
+  visibility  ChunkVisibility  @default(TENANT_VIEWER)
+
+  // The actual vector is stored in a pgvector column added by a raw SQL migration.
+  // Prisma cannot express vector(N) natively, so the column is created via raw SQL
+  // and the embedding is written/read through $queryRaw / $executeRaw.
+  // This field is a placeholder so Prisma knows the column exists.
+  // embedding  Unsupported("vector(768)")  <-- managed by raw migration, not here
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([landlordId, sourceType, sourceId, chunkIndex])
+  @@index([landlordId])
+  @@index([landlordId, sourceType])
+  @@index([tenantId])
+  @@map("document_chunks")
 }
 

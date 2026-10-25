@@ -1,9 +1,11 @@
 import jwt from "jsonwebtoken";
 import { env } from "@/config/env";
+import type { UserRole } from "@rentledger/shared";
 
 export interface AccessTokenPayload {
   landlordId: string;
   email: string;
+  role: UserRole;
 }
 
 export function signAccessToken(payload: AccessTokenPayload): string {

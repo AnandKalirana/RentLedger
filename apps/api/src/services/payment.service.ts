@@ -6,6 +6,7 @@ import { notifyPaymentSubmitted } from "@/services/notification.service";
 import { sendPaymentStatusEmail, sendPaymentSubmittedEmail } from "@/services/email.service";
 import { ListPaymentsQuery, SubmitPaymentInput } from "@/validators/payment.validator";
 import { Prisma } from "@rentledger/database";
+import { ingestPayment } from "@/rag/ingest.service";
 
 /**
  * Public, unauthenticated submission. Resolves which Tenant this payment belongs
@@ -57,6 +58,10 @@ export async function submitPublicPayment(
       status: "PENDING",
     },
   });
+
+  ingestPayment(payment.id, payment.landlordId).catch((err) =>
+    console.error("[RAG] Failed to ingest payment submission:", err)
+  );
 
   await notifyPaymentSubmitted(link.landlordId, input.submittedName, input.amount);
 
@@ -119,6 +124,10 @@ export async function verifyPayment(landlordId: string, paymentId: string) {
     data: { status: "VERIFIED", verifiedAt: new Date(), verifiedByLandlordId: landlordId },
   });
 
+  ingestPayment(paymentId, landlordId).catch((err) =>
+    console.error("[RAG] Failed to re-ingest verified payment:", err)
+  );
+
   if (payment.tenant.email) {
     await sendPaymentStatusEmail(payment.tenant.email, "VERIFIED", Number(payment.amount));
   }
@@ -136,6 +145,10 @@ export async function rejectPayment(landlordId: string, paymentId: string, reaso
     where: { id: paymentId },
     data: { status: "REJECTED", rejectionReason: reason, verifiedByLandlordId: landlordId },
   });
+
+  ingestPayment(paymentId, landlordId).catch((err) =>
+    console.error("[RAG] Failed to re-ingest rejected payment:", err)
+  );
 
   if (payment.tenant.email) {
     await sendPaymentStatusEmail(payment.tenant.email, "REJECTED", Number(payment.amount), reason);

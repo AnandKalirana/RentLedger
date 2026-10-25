@@ -7,6 +7,7 @@ const envSchema = z.object({
   CLIENT_URL: z.string().url(),
 
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
+  DIRECT_URL: z.string().optional(),
 
   JWT_ACCESS_SECRET: z.string().min(16, "JWT_ACCESS_SECRET must be at least 16 characters"),
   JWT_REFRESH_SECRET: z.string().min(16, "JWT_REFRESH_SECRET must be at least 16 characters"),
@@ -25,6 +26,17 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASSWORD: z.string().optional(),
   SMTP_FROM: z.string().optional(),
+
+  // RAG / LLM Providers
+  EMBEDDING_PROVIDER: z.enum(["gemini", "ollama", "mock"]).default("mock"),
+  LLM_PROVIDER: z.enum(["gemini", "ollama", "mock"]).default("mock"),
+  EMBEDDING_DIM: z.coerce.number().default(768),
+  GEMINI_API_KEY: z.string().optional(),
+  GEMINI_EMBED_MODEL: z.string().default("text-embedding-004"),
+  GEMINI_CHAT_MODEL: z.string().default("gemini-2.0-flash-lite"),
+  OLLAMA_BASE_URL: z.string().default("http://localhost:11434"),
+  OLLAMA_EMBED_MODEL: z.string().default("nomic-embed-text"),
+  OLLAMA_CHAT_MODEL: z.string().default("llama3.2"),
 });
 
 const parsed = envSchema.safeParse(process.env);

@@ -9,6 +9,8 @@ import publicRoutes from "@/routes/public.routes";
 import notificationRoutes from "@/routes/notification.routes";
 import profileRoutes from "@/routes/profile.routes";
 import maintenanceRoutes from "@/routes/maintenance.routes";
+import auditLogRoutes from "@/routes/auditLog.routes";
+import assistantRoutes from "@/routes/assistant.routes";
 
 const router = Router();
 
@@ -22,5 +24,7 @@ router.use("/public", publicRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/profile", profileRoutes);
 router.use("/maintenance", maintenanceRoutes);
+router.use("/audit-logs", auditLogRoutes);
+router.use("/assistant", assistantRoutes);
 
 export default router;
