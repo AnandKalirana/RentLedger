@@ -6,6 +6,7 @@ import { api } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { Select } from "@/components/ui/Select";
+import { SkeletonList } from "@/components/ui/Skeleton";
 import type { PaymentLinkDTO, TenantDTO } from "@rentledger/shared";
 
 type LinkRow = PaymentLinkDTO & { tenant?: { fullName: string } | null };
@@ -56,43 +57,41 @@ export default function PaymentLinksPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-8 py-8">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="ledger-head flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Payment links</h1>
-          <p className="mt-1 text-sm text-[var(--ink-soft)]">
-            Share a link so tenants can submit rent payment proof.
-          </p>
+          <h1>Payment links</h1>
+          <p>Share a link so tenants can submit rent payment proof.</p>
         </div>
         <Button onClick={() => setShowCreateModal(true)}>
           <Plus className="h-4 w-4" /> New link
         </Button>
       </div>
 
-      {loading && <p className="mt-8 text-sm text-[var(--ink-soft)]">Loading…</p>}
+      {loading && <SkeletonList lines={3} />}
 
       {!loading && links.length === 0 && (
-        <div className="mt-8 rounded-lg border border-dashed border-[var(--line)] bg-[var(--paper-raised)] p-10 text-center text-sm text-[var(--ink-soft)]">
-          No payment links yet. Create a reusable link, or a tenant-specific one if you'd like
+        <div className="mt-8 rounded-[var(--radius-card)] border border-dashed border-[var(--color-rule-2)] p-10 text-center text-sm text-[var(--color-muted)]">
+          No payment links yet. Create a reusable link, or a tenant-specific one if you&rsquo;d like
           their details pre-filled.
         </div>
       )}
 
       {!loading && links.length > 0 && (
-        <div className="mt-6 space-y-3">
+        <div className="panel mt-6 divide-y divide-[var(--color-rule)]">
           {links.map((link) => (
             <div
               key={link.id}
-              className="flex items-center justify-between rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-4"
+              className="flex flex-wrap items-center justify-between gap-3 p-4"
             >
-              <div className="flex items-center gap-3">
-                <Link2 className="h-4 w-4 text-[var(--stamp)]" />
-                <div>
+              <div className="flex min-w-0 items-center gap-3">
+                <Link2 className={link.isActive ? "h-4 w-4 shrink-0 text-[var(--color-accent)]" : "h-4 w-4 shrink-0 text-[var(--color-muted)]"} />
+                <div className="min-w-0">
                   <p className="text-sm font-medium">
                     {link.type === "REUSABLE" ? "Reusable link" : `For ${link.tenant?.fullName ?? "tenant"}`}
-                    {!link.isActive && <span className="ml-2 text-xs text-[var(--danger)]">(deactivated)</span>}
+                    {!link.isActive && <span className="ml-2 text-[0.8125rem] text-[var(--danger)]">(deactivated)</span>}
                   </p>
-                  <p className="mt-0.5 font-mono-data text-xs text-[var(--ink-soft)]">{link.url}</p>
+                  <p className="mt-0.5 break-all font-mono-data text-[0.8125rem] text-[var(--color-muted)]">{link.url}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -118,8 +117,8 @@ export default function PaymentLinksPage() {
               value={linkType}
               onChange={(e) => setLinkType(e.target.value as "REUSABLE" | "TENANT_SPECIFIC")}
             >
-              <option value="REUSABLE">Reusable — any tenant can use it</option>
-              <option value="TENANT_SPECIFIC">Tenant-specific — pre-filled for one tenant</option>
+              <option value="REUSABLE">Reusable: any tenant can use it</option>
+              <option value="TENANT_SPECIFIC">Tenant-specific: pre-filled for one tenant</option>
             </Select>
             {linkType === "TENANT_SPECIFIC" && (
               <Select

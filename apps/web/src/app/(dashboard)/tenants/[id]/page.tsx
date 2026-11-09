@@ -78,7 +78,7 @@ export default function TenantProfilePage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-5xl px-8 py-8 space-y-4">
+      <div className="mx-auto max-w-5xl space-y-4 px-4 py-6 sm:px-8 sm:py-8">
         <Skeleton className="h-4 w-32" />
         <Skeleton className="h-8 w-64" />
         <div className="grid gap-4 sm:grid-cols-3">
@@ -91,20 +91,24 @@ export default function TenantProfilePage() {
   }
 
   if (error || !tenant)
-    return <div className="px-8 py-8 text-sm text-[var(--danger)]">{error ?? "Tenant not found"}</div>;
+    return (
+      <div role="alert" className="px-4 py-6 text-sm text-[var(--danger)] sm:px-8 sm:py-8">
+        {error ?? "Tenant not found"}
+      </div>
+    );
 
   return (
-    <div className="mx-auto max-w-5xl px-8 py-8">
-      <Link href="/tenants" className="inline-flex items-center gap-1.5 text-sm text-[var(--ink-soft)] hover:text-[var(--ink)]">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+      <Link href="/tenants" className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-muted)] transition-colors hover:text-[var(--color-ink)]">
         <ArrowLeft className="h-4 w-4" /> Back to tenants
       </Link>
 
-      <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
+      <div className="ledger-head mt-4 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">{tenant.fullName}</h1>
-          <div className="mt-1.5 flex items-center gap-2">
+          <h1>{tenant.fullName}</h1>
+          <div className="mt-2 flex items-center gap-2.5">
             <Badge status={tenant.status} />
-            <span className="text-sm text-[var(--ink-soft)]">{tenant.mobileNumber}</span>
+            <span className="font-mono-data text-sm text-[var(--color-muted)]">{tenant.mobileNumber}</span>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -115,9 +119,9 @@ export default function TenantProfilePage() {
             disabled={sendingReminder}
             title="Upcoming Feature — WhatsApp Cloud API Preview"
           >
-            <MessageSquare className="h-4 w-4 text-emerald-600" />
+            <MessageSquare className="h-4 w-4 text-[var(--color-accent)]" />
             {sendingReminder ? "Sending..." : "Send WhatsApp Reminder"}
-            <span className="ml-1.5 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 border border-amber-200">
+            <span className="ml-1.5 rounded bg-[var(--color-warn-soft)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--color-warn)] ring-1 ring-inset ring-[var(--color-warn)]/25">
               Upcoming
             </span>
           </Button>
@@ -130,22 +134,22 @@ export default function TenantProfilePage() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-4">
-          <p className="text-xs text-[var(--ink-soft)] font-medium">Monthly rent</p>
-          <p className="mt-1 font-mono-data text-lg font-semibold">
+      <div className="panel mt-6 grid gap-px overflow-hidden bg-[var(--color-rule)] sm:grid-cols-3 [&>*]:bg-[var(--color-cotton)]">
+        <div className="p-5">
+          <p className="text-[0.8125rem] font-medium text-[var(--color-muted)]">Monthly rent</p>
+          <p className="mt-1.5 font-mono-data text-xl font-medium">
             ₹{tenant.monthlyRent.toLocaleString("en-IN")}
           </p>
         </div>
-        <div className="rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-4">
-          <p className="text-xs text-[var(--ink-soft)] font-medium">Security deposit</p>
-          <p className="mt-1 font-mono-data text-lg font-semibold">
+        <div className="p-5">
+          <p className="text-[0.8125rem] font-medium text-[var(--color-muted)]">Security deposit</p>
+          <p className="mt-1.5 font-mono-data text-xl font-medium">
             ₹{tenant.securityDeposit.toLocaleString("en-IN")}
           </p>
         </div>
-        <div className="rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-4">
-          <p className="text-xs text-[var(--ink-soft)] font-medium">Move-in date & Rent Due Day</p>
-          <p className="mt-1 font-mono-data text-lg font-semibold">
+        <div className="p-5">
+          <p className="text-[0.8125rem] font-medium text-[var(--color-muted)]">Move-in date & Rent Due Day</p>
+          <p className="mt-1.5 font-mono-data text-xl font-medium">
             {new Date(tenant.moveInDate).toLocaleDateString("en-IN")} (Day {tenant.rentDueDay})
           </p>
         </div>
@@ -156,33 +160,33 @@ export default function TenantProfilePage() {
         <LeaseUpload tenantId={tenant.id} leaseUrl={tenant.leaseDocumentUrl} onUploaded={loadTenant} />
       </div>
 
-      <h2 className="mt-8 text-base font-semibold">Payment history</h2>
+      <h2 className="mt-10 text-lg">Payment history</h2>
       {tenant.payments.length === 0 ? (
-        <div className="mt-4 rounded-lg border border-dashed border-[var(--line)] bg-[var(--paper-raised)] p-8 text-center text-sm text-[var(--ink-soft)]">
+        <div className="mt-4 rounded-[var(--radius-card)] border border-dashed border-[var(--color-rule-2)] p-8 text-center text-sm text-[var(--color-muted)]">
           No payments recorded yet.
         </div>
       ) : (
-        <div className="mt-4 overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--paper-raised)]">
-          <table className="w-full text-sm">
-            <thead className="border-b border-[var(--line)] bg-[var(--paper)] text-left text-xs uppercase tracking-wide text-[var(--ink-soft)]">
+        <div className="panel mt-4 overflow-x-auto">
+          <table className="ledger-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 font-medium">Period</th>
-                <th className="px-4 py-3 font-medium">Amount</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Submitted</th>
+                <th>Period</th>
+                <th className="text-right">Amount</th>
+                <th>Status</th>
+                <th>Submitted</th>
               </tr>
             </thead>
             <tbody>
               {tenant.payments.map((payment) => (
-                <tr key={payment.id} className="border-b border-[var(--line)] last:border-0">
-                  <td className="px-4 py-3 font-mono-data">
+                <tr key={payment.id}>
+                  <td className="font-mono-data">
                     {payment.billingMonth}/{payment.billingYear}
                   </td>
-                  <td className="px-4 py-3 font-mono-data">₹{payment.amount.toLocaleString("en-IN")}</td>
-                  <td className="px-4 py-3">
+                  <td className="num">₹{payment.amount.toLocaleString("en-IN")}</td>
+                  <td>
                     <Badge status={payment.status} />
                   </td>
-                  <td className="px-4 py-3 text-[var(--ink-soft)]">
+                  <td className="font-mono-data text-[var(--color-muted)]">
                     {new Date(payment.createdAt).toLocaleDateString("en-IN")}
                   </td>
                 </tr>

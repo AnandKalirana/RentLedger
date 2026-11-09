@@ -10,7 +10,7 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className={clsx(
-        "animate-pulse rounded-md bg-[var(--line)]",
+        "animate-pulse rounded-md bg-[var(--color-paper-3)]",
         className
       )}
       aria-hidden="true"
@@ -21,12 +21,9 @@ export function Skeleton({ className }: { className?: string }) {
 /** A stack of skeleton rows mimicking a table or list. */
 export function SkeletonList({ lines = 4 }: SkeletonProps) {
   return (
-    <div className="mt-6 space-y-3" aria-label="Loading…" role="status">
+    <div className="panel mt-6 divide-y divide-[var(--color-rule)]" aria-label="Loading…" role="status">
       {Array.from({ length: lines }).map((_, i) => (
-        <div
-          key={i}
-          className="flex items-center gap-4 rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-4"
-        >
+        <div key={i} className="flex items-center gap-4 p-4">
           <Skeleton className="h-4 w-1/3" />
           <Skeleton className="h-4 w-1/5" />
           <Skeleton className="ml-auto h-4 w-1/6" />
@@ -39,9 +36,13 @@ export function SkeletonList({ lines = 4 }: SkeletonProps) {
 /** A 2×4 grid of stat card skeletons for the dashboard overview. */
 export function SkeletonStatGrid() {
   return (
-    <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Loading…" role="status">
+    <div
+      className="panel mt-8 grid grid-cols-2 gap-px overflow-hidden bg-[var(--color-rule)] lg:grid-cols-4 [&>*]:bg-[var(--color-cotton)]"
+      aria-label="Loading…"
+      role="status"
+    >
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-5">
+        <div key={i} className="px-5 py-5">
           <Skeleton className="h-3 w-24" />
           <Skeleton className="mt-3 h-7 w-20" />
         </div>

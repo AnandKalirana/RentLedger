@@ -10,15 +10,18 @@ export function AuthCard({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[var(--paper)] px-6">
+    <main className="ruled-paper flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
-          RentLedger
+        <Link
+          href="/"
+          className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight"
+        >
+          Rent<span className="text-[var(--color-accent)]">Ledger</span>
         </Link>
-        <h1 className="mt-6 text-xl font-semibold">{title}</h1>
-        <p className="mt-1 text-sm text-[var(--ink-soft)]">{subtitle}</p>
-        <div className="mt-6 rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6">
-          {children}
+        <div className="panel mt-6 p-7">
+          <h1 className="text-[1.6rem]">{title}</h1>
+          <p className="mt-1.5 text-sm text-[var(--color-muted)]">{subtitle}</p>
+          <div className="mt-6">{children}</div>
         </div>
       </div>
     </main>

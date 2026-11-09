@@ -95,35 +95,40 @@ export default function SettingsPage() {
     }
   }
 
-  if (loading) return <div className="px-8 py-8 text-sm text-[var(--ink-soft)]">Loading…</div>;
+  if (loading)
+    return (
+      <div role="status" className="px-4 py-6 text-sm text-[var(--color-muted)] sm:px-8 sm:py-8">
+        Loading…
+      </div>
+    );
 
   return (
-    <div className="mx-auto max-w-2xl px-8 py-8">
-      <h1 className="text-xl font-semibold tracking-tight">Settings</h1>
-      <p className="mt-1 text-sm text-[var(--ink-soft)]">
-        Your UPI QR code is shown on every payment link tenants use to pay you.
-      </p>
+    <div className="mx-auto max-w-2xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="ledger-head">
+        <h1>Settings</h1>
+        <p>Your UPI QR code is shown on every payment link tenants use to pay you.</p>
+      </div>
 
-      <div className="mt-8 rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6">
-        <h2 className="text-sm font-semibold">UPI QR code</h2>
-        <p className="mt-1 text-xs text-[var(--ink-soft)]">
-          Upload once — the same QR image is used across all your payment links.
+      <div className="panel mt-8 p-6">
+        <h2 className="text-base">UPI QR code</h2>
+        <p className="mt-1 text-[0.8125rem] text-[var(--color-muted)]">
+          Upload once: the same QR image is used across all your payment links.
         </p>
-        <div className="mt-4 flex items-center gap-5">
+        <div className="mt-4 flex flex-wrap items-center gap-5">
           {profile?.upiQrImageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={resolveFileUrl(profile.upiQrImageUrl)}
               alt="Your UPI QR code"
-              className="h-32 w-32 rounded-md border border-[var(--line)] object-contain"
+              className="h-32 w-32 rounded-[var(--radius-input)] border border-[var(--color-rule)] bg-[var(--color-cotton)] object-contain p-1"
             />
           ) : (
-            <div className="flex h-32 w-32 items-center justify-center rounded-md border border-dashed border-[var(--line)] text-xs text-[var(--ink-soft)]">
+            <div className="flex h-32 w-32 items-center justify-center rounded-[var(--radius-input)] border border-dashed border-[var(--color-rule-2)] text-center text-[0.8125rem] text-[var(--color-muted)]">
               No QR uploaded
             </div>
           )}
           <div>
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm hover:border-[var(--stamp)]">
+            <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-[var(--radius-input)] bg-[var(--color-cotton)] px-3.5 text-sm font-medium text-[var(--color-ink)] shadow-[var(--shadow-key)] transition-[background-color,transform] duration-150 hover:bg-[var(--color-paper-2)] active:translate-y-px active:bg-[var(--color-paper-3)] focus-within:ring-2 focus-within:ring-[var(--color-focus)] focus-within:ring-offset-2">
               <Upload className="h-4 w-4" />
               {qrUploading ? "Uploading…" : "Upload QR image"}
               <input
@@ -135,7 +140,7 @@ export default function SettingsPage() {
               />
             </label>
             {qrError && (
-              <p className="mt-2 text-xs text-red-500">{qrError}</p>
+              <p role="alert" className="mt-2 text-[0.8125rem] text-[var(--danger)]">{qrError}</p>
             )}
           </div>
         </div>
@@ -152,7 +157,7 @@ export default function SettingsPage() {
             {isSubmitting ? "Saving…" : "Save changes"}
           </Button>
           {saveMessage && (
-            <span className="text-sm text-[var(--ink-soft)]">{saveMessage}</span>
+            <span role="status" className="text-sm text-[var(--color-muted)]">{saveMessage}</span>
           )}
         </div>
       </form>

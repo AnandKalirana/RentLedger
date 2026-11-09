@@ -21,23 +21,24 @@ export function Modal({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--color-scrim)] px-4 py-6 backdrop-blur-[2px] sm:items-center">
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-md rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6 shadow-lg"
+        aria-label={title}
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-[var(--radius-card)] border border-[var(--color-rule)] bg-[var(--color-cotton)] p-6 shadow-[var(--shadow-pop)] animate-[fadeSlideIn_0.2s_ease-out]"
       >
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold">{title}</h2>
+        <div className="flex items-center justify-between gap-4 border-b border-[var(--color-rule)] pb-4">
+          <h2 className="text-lg">{title}</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="rounded p-1 text-[var(--ink-soft)] hover:bg-[var(--paper)]"
+            className="rounded-md p-1.5 text-[var(--color-muted)] transition-colors hover:bg-[var(--color-paper-2)] hover:text-[var(--color-ink)] active:bg-[var(--color-paper-3)]"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="mt-4">{children}</div>
+        <div className="mt-5">{children}</div>
       </div>
     </div>
   );

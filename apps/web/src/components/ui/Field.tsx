@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, forwardRef } from "react";
+import { InputHTMLAttributes, forwardRef, useId } from "react";
 
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -6,19 +6,25 @@ interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Field = forwardRef<HTMLInputElement, FieldProps>(
-  ({ label, error, id, ...props }, ref) => (
-    <div>
-      <label htmlFor={id} className="block text-sm font-medium text-[var(--ink)]">
-        {label}
-      </label>
-      <input
-        ref={ref}
-        id={id}
-        className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
-        {...props}
-      />
-      {error && <p className="mt-1 text-xs text-[var(--danger)]">{error}</p>}
-    </div>
-  )
+  ({ label, error, id, ...props }, ref) => {
+    // Callers rarely pass an id; generate one so the label is always attached to its input.
+    const autoId = useId();
+    const fieldId = id ?? autoId;
+    return (
+      <div>
+        <label htmlFor={fieldId} className="block text-sm font-medium text-[var(--color-ink)]">
+          {label}
+        </label>
+        <input
+          ref={ref}
+          id={fieldId}
+          aria-invalid={error ? true : undefined}
+          className="input mt-1.5"
+          {...props}
+        />
+        {error && <p className="mt-1.5 text-[0.8125rem] text-[var(--danger)]">{error}</p>}
+      </div>
+    );
+  }
 );
 Field.displayName = "Field";

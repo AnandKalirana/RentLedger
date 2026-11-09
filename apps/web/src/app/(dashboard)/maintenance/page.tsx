@@ -117,13 +117,11 @@ export default function MaintenancePage() {
     .reduce((sum, r) => sum + Number(r.amount), 0);
 
   return (
-    <div className="mx-auto max-w-5xl px-8 py-8">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="ledger-head flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Property Maintenance</h1>
-          <p className="mt-1 text-sm text-[var(--ink-soft)]">
-            Track monthly maintenance fees separately from rent payments.
-          </p>
+          <h1>Property Maintenance</h1>
+          <p>Track monthly maintenance fees separately from rent payments.</p>
         </div>
         <Button onClick={() => setShowAddModal(true)}>
           <Plus className="h-4 w-4" /> Log maintenance fee
@@ -131,29 +129,33 @@ export default function MaintenancePage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-4">
-          <p className="text-xs text-[var(--ink-soft)] font-medium">Verified Maintenance Collected</p>
-          <p className="mt-1 font-mono-data text-xl font-semibold text-[var(--stamp)]">
+      <div className="panel mt-6 grid gap-px overflow-hidden bg-[var(--color-rule)] sm:grid-cols-2 [&>*]:bg-[var(--color-cotton)]">
+        <div className="p-5">
+          <p className="text-[0.8125rem] font-medium text-[var(--color-muted)]">Verified Maintenance Collected</p>
+          <p className="mt-1.5 font-mono-data text-2xl font-medium text-[var(--color-accent-deep)]">
             ₹{totalCollected.toLocaleString("en-IN")}
           </p>
         </div>
-        <div className="rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-4">
-          <p className="text-xs text-[var(--ink-soft)] font-medium">Pending Maintenance Dues</p>
-          <p className="mt-1 font-mono-data text-xl font-semibold text-[var(--ink)]">
+        <div className="p-5">
+          <p className="text-[0.8125rem] font-medium text-[var(--color-muted)]">Pending Maintenance Dues</p>
+          <p className="mt-1.5 font-mono-data text-2xl font-medium text-[var(--color-ink)]">
             ₹{totalPending.toLocaleString("en-IN")}
           </p>
         </div>
       </div>
 
       {loading && <SkeletonList lines={4} />}
-      {error && !loading && <p className="mt-8 text-sm text-[var(--danger)]">{error}</p>}
+      {error && !loading && (
+        <p role="alert" className="panel mt-8 p-4 text-sm text-[var(--danger)]">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && records.length === 0 && (
-        <div className="mt-8 rounded-lg border border-dashed border-[var(--line)] bg-[var(--paper-raised)] p-10 text-center">
-          <Wrench className="mx-auto h-8 w-8 text-[var(--ink-soft)]" />
-          <p className="mt-2 text-sm font-medium text-[var(--ink)]">No maintenance records logged yet</p>
-          <p className="mt-1 text-sm text-[var(--ink-soft)]">
+        <div className="mt-8 rounded-[var(--radius-card)] border border-dashed border-[var(--color-rule-2)] p-10 text-center">
+          <Wrench className="mx-auto h-8 w-8 text-[var(--color-muted)]" strokeWidth={1.5} />
+          <p className="mt-2 font-[family-name:var(--font-display)] text-base font-bold text-[var(--color-ink)]">No maintenance records logged yet</p>
+          <p className="mx-auto mt-1 text-sm text-[var(--color-muted)]">
             Log monthly maintenance fees per tenant/property to keep them separate from rent.
           </p>
           <Button className="mt-4" size="sm" onClick={() => setShowAddModal(true)}>
@@ -163,31 +165,31 @@ export default function MaintenancePage() {
       )}
 
       {!loading && records.length > 0 && (
-        <div className="mt-6 overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--paper-raised)]">
-          <table className="w-full text-sm">
-            <thead className="border-b border-[var(--line)] bg-[var(--paper)] text-left text-xs uppercase tracking-wide text-[var(--ink-soft)]">
+        <div className="panel mt-6 overflow-x-auto">
+          <table className="ledger-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 font-medium">Tenant</th>
-                <th className="px-4 py-3 font-medium">Period</th>
-                <th className="px-4 py-3 font-medium">Amount</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Notes</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th>Tenant</th>
+                <th>Period</th>
+                <th className="text-right">Amount</th>
+                <th>Status</th>
+                <th>Notes</th>
+                <th className="text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {records.map((rec) => (
-                <tr key={rec.id} className="border-b border-[var(--line)] last:border-0">
-                  <td className="px-4 py-3 font-medium">{rec.tenant?.fullName ?? "Tenant"}</td>
-                  <td className="px-4 py-3 font-mono-data">
+                <tr key={rec.id}>
+                  <td className="font-medium">{rec.tenant?.fullName ?? "Tenant"}</td>
+                  <td className="font-mono-data">
                     {rec.billingMonth}/{rec.billingYear}
                   </td>
-                  <td className="px-4 py-3 font-mono-data">₹{Number(rec.amount).toLocaleString("en-IN")}</td>
-                  <td className="px-4 py-3">
+                  <td className="num">₹{Number(rec.amount).toLocaleString("en-IN")}</td>
+                  <td>
                     <Badge status={rec.status} />
                   </td>
-                  <td className="px-4 py-3 text-xs text-[var(--ink-soft)]">{rec.notes ?? "—"}</td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="text-[0.8125rem] text-[var(--color-muted)]">{rec.notes ?? "—"}</td>
+                  <td className="text-right">
                     <div className="flex items-center justify-end gap-2">
                       {rec.status === "PENDING" && (
                         <Button
@@ -202,7 +204,7 @@ export default function MaintenancePage() {
                         onClick={() => {
                           if (confirm("Delete this maintenance record?")) deleteMutation.mutate(rec.id);
                         }}
-                        className="rounded p-1.5 text-[var(--ink-soft)] hover:bg-[var(--danger-soft)] hover:text-[var(--danger)]"
+                        className="rounded-md p-2 text-[var(--color-muted)] transition-colors hover:bg-[var(--danger-soft)] hover:text-[var(--danger)] active:bg-[var(--danger-soft)]"
                         aria-label="Delete record"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -220,8 +222,9 @@ export default function MaintenancePage() {
         <Modal title="Log maintenance fee" onClose={() => setShowAddModal(false)}>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--ink)]">Select Tenant</label>
+              <label htmlFor="maint-tenant" className="block text-sm font-medium text-[var(--color-ink)]">Select Tenant</label>
               <select
+                id="maint-tenant"
                 value={selectedTenantId}
                 onChange={(e) => {
                   setSelectedTenantId(e.target.value);
@@ -230,7 +233,7 @@ export default function MaintenancePage() {
                     setAmount(String(t.monthlyMaintenance));
                   }
                 }}
-                className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
+                className="input mt-1.5"
               >
                 <option value="">-- Select a tenant --</option>
                 {tenants.map((t) => (
@@ -242,47 +245,51 @@ export default function MaintenancePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[var(--ink)]">Maintenance Amount (₹)</label>
+              <label htmlFor="maint-amount" className="block text-sm font-medium text-[var(--color-ink)]">Maintenance Amount (₹)</label>
               <input
+                id="maint-amount"
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="e.g. 2000"
-                className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
+                className="input mt-1.5"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-[var(--ink)]">Month</label>
+                <label htmlFor="maint-month" className="block text-sm font-medium text-[var(--color-ink)]">Month</label>
                 <input
+                  id="maint-month"
                   type="number"
                   min={1}
                   max={12}
                   value={billingMonth}
                   onChange={(e) => setBillingMonth(Number(e.target.value))}
-                  className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
+                  className="input mt-1.5"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[var(--ink)]">Year</label>
+                <label htmlFor="maint-year" className="block text-sm font-medium text-[var(--color-ink)]">Year</label>
                 <input
+                  id="maint-year"
                   type="number"
                   value={billingYear}
                   onChange={(e) => setBillingYear(Number(e.target.value))}
-                  className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
+                  className="input mt-1.5"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[var(--ink)]">Notes (optional)</label>
+              <label htmlFor="maint-notes" className="block text-sm font-medium text-[var(--color-ink)]">Notes (optional)</label>
               <textarea
+                id="maint-notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
                 placeholder="e.g. Water bill & society maintenance"
-                className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
+                className="input mt-1.5"
               />
             </div>
 

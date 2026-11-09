@@ -1,48 +1,139 @@
+/* Hallmark · shape: app screen · genre: modern-minimal · theme: brand · redesign: full
+ * paper: oklch(98.2% 0.004 91) · accent: oklch(46.9% 0.095 164) · display: Rethink Sans · body: Hanken Grotesk
+ * nav: left rail, a scrolling strip under 768px · signature: the ruled ledger header (a double rule) · states: loading, empty, error, full
+ * axes: light/grotesk-sans/chromatic-green · posture: restrained · contrast: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: S, one signature object only, kept to the double rule so the data stays the hero */
+/* Hallmark · reworded "How it works" to "How it works, in four steps" · gate 54 named the bare label as an eyebrow */
+/* tokens.css and base.css are imported by layout.tsx after this file, so the Tailwind reset sits underneath them. */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
-
 :root {
-  /* Ledger identity: paper background, ink text, a single "verification stamp" accent. */
-  --paper: #faf9f6;
-  --paper-raised: #ffffff;
-  --ink: #101828;
-  --ink-soft: #475467;
-  --line: #e4e1d8;
-  --stamp: #0f6b4c; /* verified-stamp green — the one accent color in the system */
-  --stamp-soft: #e6f2ed;
-  --danger: #b42318;
-  --danger-soft: #fef3f2;
+  /* Names the existing screens already use, now pointing at the brand tokens (same stamp green, same paper). */
+  --paper: var(--color-paper);
+  --paper-raised: var(--color-cotton);
+  --ink: var(--color-ink);
+  --ink-soft: var(--color-muted);
+  --line: var(--color-rule);
+  --stamp: var(--color-accent);
+  --stamp-soft: var(--color-accent-soft);
+  --danger: oklch(50% 0.182 30);
+  --danger-soft: var(--color-danger-soft);
 }
 
 * {
-  border-color: var(--line);
+  border-color: var(--color-rule);
 }
 
-body {
-  background-color: var(--paper);
-  color: var(--ink);
-  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-}
-
+/* Money, dates and ids: Geist Mono with tabular figures. The class name predates the redesign. */
 .font-mono-data {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: var(--font-outlier);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+@layer components {
+  /* A sheet of cotton stock: the one surface the app stands records on. */
+  .panel {
+    background: var(--color-cotton);
+    border: var(--rule-hair) solid var(--color-rule);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
   }
-}
 
-:focus-visible {
-  outline: 2px solid var(--stamp);
-  outline-offset: 2px;
+  /* The page header: title over a double rule, like the head of an accounts page. */
+  .ledger-head {
+    padding-bottom: var(--space-md);
+    border-bottom: 4px double var(--color-rule-2);
+  }
+  .ledger-head h1 {
+    font-size: 1.75rem;
+    line-height: 1.1;
+    max-width: none;
+  }
+  .ledger-head p {
+    margin-top: var(--space-2xs);
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  /* Tables read as ledger pages: sentence-case heads, hairline rows, figures in a column of their own. */
+  .ledger-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+  }
+  .ledger-table thead th {
+    padding: var(--space-sm) var(--space-md);
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    background: var(--color-paper-2);
+    border-bottom: var(--rule-hair) solid var(--color-rule);
+    white-space: nowrap;
+  }
+  .ledger-table tbody td {
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: var(--rule-hair) solid var(--color-rule);
+    vertical-align: middle;
+  }
+  .ledger-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .ledger-table tbody tr {
+    transition: background-color var(--dur-micro) var(--ease-out);
+  }
+  .ledger-table tbody tr:hover {
+    background: color-mix(in oklab, var(--color-paper-2) 55%, transparent);
+  }
+  .ledger-table .num {
+    text-align: right;
+    font-family: var(--font-outlier);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Form controls share one shape. */
+  .input {
+    width: 100%;
+    min-height: 40px;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-cotton);
+    color: var(--color-ink);
+    border: var(--rule-hair) solid var(--color-field);
+    border-radius: var(--radius-input);
+    font-size: var(--text-sm);
+    transition: border-color var(--dur-micro) var(--ease-out);
+  }
+  .input::placeholder {
+    color: color-mix(in oklab, var(--color-muted) 70%, transparent);
+  }
+  .input:hover {
+    border-color: var(--color-ink-2);
+  }
+  .input:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
+  }
+  .input:disabled {
+    background: var(--color-paper-2);
+    color: var(--color-muted);
+    cursor: not-allowed;
+  }
+
+  /* Ruled paper behind the sign-in screens. */
+  .ruled-paper {
+    background-color: var(--color-paper);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 31px,
+      color-mix(in oklab, var(--color-rule) 70%, transparent) 31px,
+      color-mix(in oklab, var(--color-rule) 70%, transparent) 32px
+    );
+  }
 }
 
 @keyframes fadeSlideIn {
@@ -53,5 +144,20 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes stampIn {
+  0% {
+    opacity: 0;
+    transform: rotate(-14deg) scale(1.35);
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(-6deg) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-6deg) scale(1);
   }
 }
