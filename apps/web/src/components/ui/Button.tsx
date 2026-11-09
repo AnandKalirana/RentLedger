@@ -7,18 +7,27 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none";
+  "inline-flex items-center justify-center gap-2 rounded-[var(--radius-input)] font-medium whitespace-nowrap " +
+  "transition-[background-color,box-shadow,transform] duration-150 ease-out active:translate-y-px " +
+  "disabled:opacity-50 disabled:pointer-events-none";
 
 const variants: Record<string, string> = {
-  primary: "bg-[var(--stamp)] text-white hover:bg-[#0c5a3f]",
-  secondary: "bg-white text-[var(--ink)] border border-[var(--line)] hover:bg-[var(--paper)]",
-  ghost: "text-[var(--ink)] hover:bg-[var(--paper)]",
+  primary:
+    "bg-[var(--color-accent)] text-[var(--color-accent-ink)] " +
+    "shadow-[var(--shadow-primary)] " +
+    "hover:bg-[var(--color-accent-deep)] active:shadow-[var(--shadow-primary-down)]",
+  secondary:
+    "bg-[var(--color-cotton)] text-[var(--color-ink)] " +
+    "shadow-[var(--shadow-key)] " +
+    "hover:bg-[var(--color-paper-2)] active:bg-[var(--color-paper-3)]",
+  ghost:
+    "text-[var(--color-ink-2)] hover:bg-[var(--color-paper-2)] hover:text-[var(--color-ink)] active:bg-[var(--color-paper-3)]",
 };
 
 const sizes: Record<string, string> = {
-  sm: "text-sm px-3 py-1.5",
-  md: "text-sm px-4 py-2.5",
-  lg: "text-base px-6 py-3",
+  sm: "text-sm h-9 px-3",
+  md: "text-sm h-10 px-4",
+  lg: "text-base h-12 px-6",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

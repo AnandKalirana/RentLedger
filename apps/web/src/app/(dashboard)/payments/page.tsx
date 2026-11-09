@@ -73,23 +73,24 @@ export default function PaymentsPage() {
   const error = queryError ? (queryError instanceof Error ? queryError.message : "Failed to load payments") : null;
 
   return (
-    <div className="mx-auto max-w-5xl px-8 py-8">
-      <h1 className="text-xl font-semibold tracking-tight">Payments</h1>
-      <p className="mt-1 text-sm text-[var(--ink-soft)]">
-        Review submitted proof and verify or reject each payment.
-      </p>
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="ledger-head">
+        <h1>Payments</h1>
+        <p>Review submitted proof and verify or reject each payment.</p>
+      </div>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1 rounded-md border border-[var(--line)] bg-[var(--paper-raised)] p-1">
+        <div className="flex gap-1 overflow-x-auto rounded-[var(--radius-input)] bg-[var(--color-paper-2)] p-1 shadow-[inset_0_0_0_1px_var(--color-rule)]">
           {TABS.map((t) => (
             <button
               key={t.value}
               onClick={() => setTab(t.value)}
+              aria-pressed={tab === t.value}
               className={clsx(
-                "rounded px-3 py-1.5 text-sm font-medium transition-colors",
+                "h-8 shrink-0 rounded-md px-3 text-sm font-medium transition-[background-color,color,box-shadow] duration-150 active:translate-y-px",
                 tab === t.value
-                  ? "bg-[var(--stamp-soft)] text-[var(--stamp)]"
-                  : "text-[var(--ink-soft)] hover:text-[var(--ink)]"
+                  ? "bg-[var(--color-cotton)] text-[var(--color-ink)] shadow-[var(--shadow-seg)]"
+                  : "text-[var(--color-muted)] hover:text-[var(--color-ink)]"
               )}
             >
               {t.label}
@@ -100,44 +101,49 @@ export default function PaymentsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or mobile…"
-          className="w-56 rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
+          aria-label="Search payments"
+          className="input w-full sm:w-64"
         />
       </div>
 
       {loading && <SkeletonList lines={4} />}
-      {error && !loading && <p className="mt-8 text-sm text-[var(--danger)]">{error}</p>}
+      {error && !loading && (
+        <p role="alert" className="panel mt-8 p-4 text-sm text-[var(--danger)]">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && payments.length === 0 && (
-        <div className="mt-8 rounded-lg border border-dashed border-[var(--line)] bg-[var(--paper-raised)] p-10 text-center text-sm text-[var(--ink-soft)]">
+        <div className="mt-8 rounded-[var(--radius-card)] border border-dashed border-[var(--color-rule-2)] p-10 text-center text-sm text-[var(--color-muted)]">
           No payments found for this criteria.
         </div>
       )}
 
       {!loading && payments.length > 0 && (
-        <div className="mt-6 space-y-3">
+        <div className="panel mt-6 divide-y divide-[var(--color-rule)]">
           {payments.map((payment) => (
             <div
               key={payment.id}
-              className="flex items-center justify-between rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-4 shadow-sm transition-shadow hover:shadow-md"
+              className="flex flex-wrap items-center justify-between gap-3 p-4 transition-colors hover:bg-[var(--color-paper-2)]/50"
             >
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{payment.tenant?.fullName ?? payment.submittedName}</span>
                   <Badge status={payment.status} />
                 </div>
-                <p className="mt-1 text-sm text-[var(--ink-soft)]">
-                  ₹{payment.amount.toLocaleString("en-IN")} - {payment.billingMonth}/{payment.billingYear} - submitted {new Date(payment.createdAt).toLocaleDateString("en-IN")}
+                <p className="mt-1 text-sm text-[var(--color-muted)]">
+                  <span className="font-mono-data font-medium text-[var(--color-ink)]">₹{payment.amount.toLocaleString("en-IN")}</span> - {payment.billingMonth}/{payment.billingYear} - submitted {new Date(payment.createdAt).toLocaleDateString("en-IN")}
                 </p>
                 {payment.status === "REJECTED" && payment.rejectionReason && (
-                  <p className="mt-1 text-xs text-[var(--danger)]">Reason: {payment.rejectionReason}</p>
+                  <p className="mt-1 text-[0.8125rem] text-[var(--danger)]">Reason: {payment.rejectionReason}</p>
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <a
                   href={resolveFileUrl(payment.proofFileUrl)}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-1 rounded-md border border-[var(--line)] px-3 py-1.5 text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] hover:bg-[var(--paper)] transition-colors"
+                  className="inline-flex h-9 items-center gap-1.5 rounded-[var(--radius-input)] bg-[var(--color-cotton)] px-3 text-sm font-medium text-[var(--color-ink-2)] shadow-[var(--shadow-key)] transition-[background-color,transform] duration-150 hover:bg-[var(--color-paper-2)] hover:text-[var(--color-ink)] active:translate-y-px active:bg-[var(--color-paper-3)]"
                 >
                   <ExternalLink className="h-3.5 w-3.5" /> Proof
                 </a>
@@ -168,13 +174,14 @@ export default function PaymentsPage() {
 
       {rejectingId && (
         <Modal title="Reject payment" onClose={() => setRejectingId(null)}>
-          <label className="block text-sm font-medium text-[var(--ink)]">Reason for rejection</label>
+          <label htmlFor="reject-reason" className="block text-sm font-medium text-[var(--color-ink)]">Reason for rejection</label>
           <textarea
+            id="reject-reason"
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
             rows={3}
             placeholder="e.g. Proof image doesn't match the expected amount"
-            className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
+            className="input mt-1.5"
           />
           <Button
             className="mt-4 w-full"

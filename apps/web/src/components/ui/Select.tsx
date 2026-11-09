@@ -1,4 +1,4 @@
-import { SelectHTMLAttributes, forwardRef } from "react";
+import { SelectHTMLAttributes, forwardRef, useId } from "react";
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
@@ -7,21 +7,26 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, id, children, ...props }, ref) => (
-    <div>
-      <label htmlFor={id} className="block text-sm font-medium text-[var(--ink)]">
-        {label}
-      </label>
-      <select
-        ref={ref}
-        id={id}
-        className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
-        {...props}
-      >
-        {children}
-      </select>
-      {error && <p className="mt-1 text-xs text-[var(--danger)]">{error}</p>}
-    </div>
-  )
+  ({ label, error, id, children, ...props }, ref) => {
+    const autoId = useId();
+    const fieldId = id ?? autoId;
+    return (
+      <div>
+        <label htmlFor={fieldId} className="block text-sm font-medium text-[var(--color-ink)]">
+          {label}
+        </label>
+        <select
+          ref={ref}
+          id={fieldId}
+          aria-invalid={error ? true : undefined}
+          className="input mt-1.5"
+          {...props}
+        >
+          {children}
+        </select>
+        {error && <p className="mt-1.5 text-[0.8125rem] text-[var(--danger)]">{error}</p>}
+      </div>
+    );
+  }
 );
 Select.displayName = "Select";

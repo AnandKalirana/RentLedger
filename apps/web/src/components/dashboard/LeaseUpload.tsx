@@ -44,15 +44,15 @@ export function LeaseUpload({
   }
 
   return (
-    <div className="rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-5">
-      <div className="flex items-center justify-between">
+    <div className="panel p-5">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="rounded-md bg-[var(--stamp-soft)] p-2.5 text-[var(--stamp)]">
+          <div className="rounded-[var(--radius-input)] bg-[var(--stamp-soft)] p-2.5 text-[var(--color-accent-deep)]">
             <FileText className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="font-medium text-sm text-[var(--ink)]">Lease Agreement Document</h3>
-            <p className="text-xs text-[var(--ink-soft)] mt-0.5">
+            <h3 className="text-sm font-medium text-[var(--color-ink)]">Lease Agreement Document</h3>
+            <p className="mt-0.5 text-[0.8125rem] text-[var(--color-muted)]">
               Upload PDF or image copy of the signed lease agreement.
             </p>
           </div>
@@ -64,14 +64,14 @@ export function LeaseUpload({
               href={resolveFileUrl(leaseUrl)}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--ink)] hover:bg-[var(--paper)] transition-colors"
+              className="inline-flex h-9 items-center gap-1.5 rounded-[var(--radius-input)] bg-[var(--color-cotton)] px-3 text-[0.8125rem] font-medium text-[var(--color-ink)] shadow-[var(--shadow-key)] transition-[background-color,transform] duration-150 hover:bg-[var(--color-paper-2)] active:translate-y-px active:bg-[var(--color-paper-3)]"
             >
               <ExternalLink className="h-3.5 w-3.5" /> View / Download
             </a>
           )}
-          <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--ink)] hover:border-[var(--stamp)] transition-colors">
+          <label className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-[var(--radius-input)] bg-[var(--color-cotton)] px-3 text-[0.8125rem] font-medium text-[var(--color-ink)] shadow-[var(--shadow-key)] transition-[background-color,transform] duration-150 hover:bg-[var(--color-paper-2)] active:translate-y-px active:bg-[var(--color-paper-3)] focus-within:ring-2 focus-within:ring-[var(--color-focus)] focus-within:ring-offset-2">
             <Upload className="h-3.5 w-3.5" />
-            {uploading ? "Uploading..." : leaseUrl ? "Replace document" : "Upload document"}
+            {uploading ? "Uploading…" : leaseUrl ? "Replace document" : "Upload document"}
             <input
               ref={fileInputRef}
               type="file"

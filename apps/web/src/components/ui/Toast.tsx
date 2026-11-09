@@ -40,9 +40,9 @@ const icons: Record<ToastKind, React.ElementType> = {
 };
 
 const styles: Record<ToastKind, string> = {
-  success: "border-[var(--stamp)] text-[var(--stamp)]",
-  error: "border-[var(--danger)] text-[var(--danger)]",
-  info: "border-[var(--line)] text-[var(--ink-soft)]",
+  success: "border-l-[var(--stamp)] text-[var(--stamp)]",
+  error: "border-l-[var(--danger)] text-[var(--danger)]",
+  info: "border-l-[var(--color-rule-2)] text-[var(--color-muted)]",
 };
 
 function Toast({ item, onDismiss }: { item: ToastItem; onDismiss: (id: string) => void }) {
@@ -51,7 +51,7 @@ function Toast({ item, onDismiss }: { item: ToastItem; onDismiss: (id: string) =
     <div
       role="alert"
       className={clsx(
-        "flex items-start gap-3 rounded-lg border bg-[var(--paper-raised)] px-4 py-3 shadow-md",
+        "flex items-start gap-3 rounded-[var(--radius-input)] border border-l-4 border-[var(--color-rule)] bg-[var(--color-cotton)] px-4 py-3 shadow-[var(--shadow-pop)]",
         "animate-[fadeSlideIn_0.2s_ease-out]",
         styles[item.kind]
       )}
@@ -60,7 +60,7 @@ function Toast({ item, onDismiss }: { item: ToastItem; onDismiss: (id: string) =
       <p className="flex-1 text-sm text-[var(--ink)]">{item.message}</p>
       <button
         onClick={() => onDismiss(item.id)}
-        className="rounded p-0.5 text-[var(--ink-soft)] hover:text-[var(--ink)]"
+        className="rounded p-0.5 text-[var(--color-muted)] transition-colors hover:text-[var(--color-ink)] active:text-[var(--color-ink-2)]"
         aria-label="Dismiss"
       >
         <X className="h-3.5 w-3.5" />
@@ -98,7 +98,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       <div
         aria-live="polite"
         aria-label="Notifications"
-        className="fixed bottom-5 right-5 z-50 flex w-80 flex-col gap-2"
+        className="fixed bottom-4 right-4 z-50 flex w-[min(20rem,calc(100vw-2rem))] flex-col gap-2"
       >
         {toasts.map((item) => (
           <Toast key={item.id} item={item} onDismiss={dismiss} />

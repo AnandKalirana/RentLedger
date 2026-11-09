@@ -97,32 +97,30 @@ export default function AssistantPage() {
   }
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-64px)] max-w-5xl flex-col px-6 py-6">
+    <div className="mx-auto flex h-[calc(100dvh-8.5rem)] min-h-[30rem] max-w-5xl flex-col px-4 py-5 sm:px-8 sm:py-6 md:h-[calc(100vh-56px)]">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[var(--line)] pb-4">
+      <div className="ledger-head">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold tracking-tight">AI Assistant</h1>
-            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--stamp-soft)] px-2.5 py-0.5 text-xs font-medium text-[var(--stamp)]">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <h1>AI Assistant</h1>
+            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--stamp-soft)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-accent-deep)] ring-1 ring-inset ring-[var(--stamp)]/25">
               <ShieldCheck className="h-3.5 w-3.5" />
               Permission-aware RAG
             </span>
           </div>
-          <p className="mt-1 text-sm text-[var(--ink-soft)]">
-            Ask questions about tenants, collections, and payment history. Scoped strictly to your tenancy.
-          </p>
+          <p>Ask questions about tenants, collections, and payment history. Scoped strictly to your tenancy.</p>
         </div>
       </div>
 
       {/* Suggested prompts chips */}
       <div className="flex flex-wrap items-center gap-2 py-3">
-        <span className="text-xs font-medium text-[var(--ink-soft)]">Suggested:</span>
+        <span className="text-[0.8125rem] font-medium text-[var(--color-muted)]">Suggested:</span>
         {SAMPLE_QUESTIONS.map((q, idx) => (
           <button
             key={idx}
             onClick={() => sendMessage(q)}
             disabled={isLoading}
-            className="rounded-full border border-[var(--line)] bg-[var(--paper-raised)] px-3 py-1 text-xs text-[var(--ink-soft)] transition-colors hover:border-[var(--stamp)] hover:text-[var(--stamp)] disabled:opacity-50"
+            className="rounded-full bg-[var(--color-cotton)] px-3 py-1.5 text-[0.8125rem] text-[var(--color-ink-2)] shadow-[0_0_0_1px_var(--color-rule-2)] transition-[box-shadow,color,transform] duration-150 hover:text-[var(--color-accent-deep)] hover:shadow-[0_0_0_1px_var(--color-accent)] active:translate-y-px disabled:pointer-events-none disabled:opacity-50"
           >
             {q}
           </button>
@@ -130,7 +128,7 @@ export default function AssistantPage() {
       </div>
 
       {/* Chat Messages Container */}
-      <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-5">
+      <div className="panel flex-1 space-y-4 overflow-y-auto p-4 sm:p-5">
         {messages.map((m) => {
           const isUser = m.role === "user";
           return (
@@ -151,18 +149,18 @@ export default function AssistantPage() {
 
               {/* Message Bubble */}
               <div
-                className={`max-w-[78%] rounded-xl px-4 py-3 shadow-xs ${
+                className={`max-w-[85%] rounded-[var(--radius-card)] px-4 py-3 sm:max-w-[78%] ${
                   isUser
                     ? "bg-[var(--stamp)] text-white"
-                    : "border border-[var(--line)] bg-[var(--paper)] text-[var(--ink)]"
+                    : "border border-[var(--color-rule)] bg-[var(--color-paper)] text-[var(--color-ink)]"
                 }`}
               >
                 <div className="whitespace-pre-wrap leading-relaxed">{m.content}</div>
 
                 {/* Citations / Sources */}
                 {!isUser && m.citations && m.citations.length > 0 && (
-                  <div className="mt-3 border-t border-[var(--line)] pt-2.5">
-                    <div className="text-xs font-semibold text-[var(--ink-soft)]">
+                  <div className="mt-3 border-t border-[var(--color-rule)] pt-2.5">
+                    <div className="text-[0.8125rem] font-medium text-[var(--color-muted)]">
                       Sources &amp; Citations ({m.citations.length}):
                     </div>
                     <div className="mt-1.5 space-y-1.5">
@@ -171,26 +169,28 @@ export default function AssistantPage() {
                         return (
                           <div
                             key={c.chunkId || cIdx}
-                            className="rounded-md border border-[var(--line)] bg-[var(--paper-raised)] p-2 text-xs"
+                            className="rounded-md border border-[var(--color-rule)] bg-[var(--color-cotton)] p-2 text-xs"
                           >
-                            <div
+                            <button
+                              type="button"
+                              aria-expanded={isExpanded}
                               onClick={() =>
                                 setExpandedCitationId(isExpanded ? null : c.chunkId)
                               }
-                              className="flex cursor-pointer items-center justify-between font-mono-data text-[11px] text-[var(--stamp)]"
+                              className="flex w-full cursor-pointer items-center justify-between text-left font-mono-data text-xs text-[var(--color-accent-deep)]"
                             >
-                              <span className="flex items-center gap-1 font-semibold">
+                              <span className="flex items-center gap-1 font-medium">
                                 <FileText className="h-3 w-3" />
-                                [{c.sourceType}] ID: {c.sourceId.slice(0, 12)}...
+                                [{c.sourceType}] ID: {c.sourceId.slice(0, 12)}…
                               </span>
                               {isExpanded ? (
                                 <ChevronUp className="h-3 w-3" />
                               ) : (
                                 <ChevronDown className="h-3 w-3" />
                               )}
-                            </div>
-                            <p className="mt-1 text-[var(--ink-soft)]">
-                              {isExpanded ? c.snippet : c.snippet.slice(0, 80) + (c.snippet.length > 80 ? "..." : "")}
+                            </button>
+                            <p className="mt-1 text-[var(--color-muted)]">
+                              {isExpanded ? c.snippet : c.snippet.slice(0, 80) + (c.snippet.length > 80 ? "…" : "")}
                             </p>
                           </div>
                         );
@@ -209,15 +209,16 @@ export default function AssistantPage() {
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--stamp-soft)] text-[var(--stamp)]">
               <Sparkles className="h-4 w-4 animate-spin" />
             </div>
-            <div className="rounded-xl border border-[var(--line)] bg-[var(--paper)] px-4 py-3 text-xs text-[var(--ink-soft)]">
-              Retrieving scoped records and formulating answer...
+            <div className="rounded-[var(--radius-card)] border border-[var(--color-rule)] bg-[var(--color-paper)] px-4 py-3 text-[0.8125rem] text-[var(--color-muted)]">
+              Retrieving scoped records and formulating answer…
             </div>
           </div>
         )}
 
         {/* Error notification */}
         {error && (
-          <div className="flex items-center gap-2 rounded-lg border border-[var(--danger)] bg-[var(--danger-soft)] p-3 text-xs text-[var(--danger)]">
+          <div role="alert"
+            className="flex items-center gap-2 rounded-[var(--radius-input)] border border-[var(--danger)] bg-[var(--danger-soft)] p-3 text-[0.8125rem] text-[var(--danger)]">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -243,17 +244,19 @@ export default function AssistantPage() {
             onKeyDown={handleKeyDown}
             placeholder="Ask anything about your tenants, rent due, or payment history..."
             disabled={isLoading}
-            className="w-full resize-none rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] py-3 pl-4 pr-12 text-sm text-[var(--ink)] placeholder:text-[var(--ink-soft)] focus:border-[var(--stamp)] focus:ring-1 focus:ring-[var(--stamp)] focus:outline-none disabled:opacity-50"
+            aria-label="Message the assistant"
+            className="input min-h-[48px] resize-none py-3 pl-4 pr-12 disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="absolute right-2.5 rounded-md bg-[var(--stamp)] p-1.5 text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+            aria-label="Send message"
+            className="absolute right-2.5 rounded-md bg-[var(--stamp)] p-1.5 text-white transition-[background-color,transform] duration-150 hover:bg-[var(--color-accent-deep)] active:translate-y-px disabled:opacity-40"
           >
             <Send className="h-4 w-4" />
           </button>
         </form>
-        <div className="mt-1.5 flex items-center justify-between text-[11px] text-[var(--ink-soft)]">
+        <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-4 text-[0.8125rem] text-[var(--color-muted)]">
           <span>Press Enter to send, Shift + Enter for new line</span>
           <span>Role-aware retrieval: Financial records filtered by role.</span>
         </div>

@@ -56,8 +56,8 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="space-y-4 text-center">
-        <p className="text-sm text-[var(--danger)]">Invalid or missing reset token.</p>
-        <Link href="/forgot-password" className="text-sm font-medium text-[var(--stamp)] hover:underline">
+        <p role="alert" className="text-sm text-[var(--danger)]">Invalid or missing reset token.</p>
+        <Link href="/forgot-password" className="text-sm font-medium text-[var(--color-accent-deep)] underline-offset-4 hover:underline">
           Request a new password reset link
         </Link>
       </div>
@@ -67,10 +67,10 @@ function ResetPasswordForm() {
   if (success) {
     return (
       <div className="space-y-4 text-center">
-        <div className="rounded-md bg-[var(--stamp-soft)] p-4 text-sm text-[var(--stamp)]">
-          Password reset successfully! Redirecting to login...
+        <div role="status" className="rounded-[var(--radius-input)] bg-[var(--stamp-soft)] p-4 text-sm text-[var(--color-accent-deep)] ring-1 ring-inset ring-[var(--stamp)]/25">
+          Password reset successfully! Redirecting to login…
         </div>
-        <Link href="/login" className="inline-block text-sm font-medium text-[var(--ink)] hover:underline">
+        <Link href="/login" className="inline-block text-sm font-medium text-[var(--color-ink)] underline underline-offset-4 decoration-[var(--color-rule-2)] hover:decoration-[var(--color-accent)]">
           Go to login
         </Link>
       </div>
@@ -81,7 +81,7 @@ function ResetPasswordForm() {
     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
       <Field label="New Password" type="password" {...register("newPassword")} error={errors.newPassword?.message} />
       <Field label="Confirm New Password" type="password" {...register("confirmPassword")} error={errors.confirmPassword?.message} />
-      {serverError && <p className="text-sm text-[var(--danger)]">{serverError}</p>}
+      {serverError && <p role="alert" className="text-sm text-[var(--danger)]">{serverError}</p>}
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? "Resetting password..." : "Reset password"}
       </Button>
@@ -92,7 +92,7 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
   return (
     <AuthCard title="Set new password" subtitle="Enter your new password below.">
-      <Suspense fallback={<p className="text-sm text-[var(--ink-soft)] text-center">Loading...</p>}>
+      <Suspense fallback={<p className="text-center text-sm text-[var(--color-muted)]">Loading…</p>}>
         <ResetPasswordForm />
       </Suspense>
     </AuthCard>

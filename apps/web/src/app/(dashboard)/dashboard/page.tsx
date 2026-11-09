@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { SkeletonStatGrid } from "@/components/ui/Skeleton";
 import { OnboardingBanner } from "@/components/dashboard/OnboardingBanner";
+import { Badge } from "@/components/ui/Badge";
 import type { DashboardSummaryDTO, TenantDTO } from "@rentledger/shared";
 
 export default function DashboardPage() {
@@ -36,11 +37,11 @@ export default function DashboardPage() {
   const hasRealData = tenants.length > 0;
 
   return (
-    <div className="mx-auto max-w-5xl px-8 py-8">
-      <h1 className="text-xl font-semibold tracking-tight">Overview</h1>
-      <p className="mt-1 text-sm text-[var(--ink-soft)]">
-        A live summary of this month&apos;s rent collection.
-      </p>
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="ledger-head">
+        <h1>Overview</h1>
+        <p>A live summary of this month&apos;s rent collection.</p>
+      </div>
 
       {/* Demo onboarding banner — shown only when no tenants exist yet */}
       {!loading && !hasRealData && <OnboardingBanner />}
@@ -48,37 +49,39 @@ export default function DashboardPage() {
       {loading && <SkeletonStatGrid />}
 
       {error && !summaryLoading && (
-        <div className="mt-8 rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6 text-sm text-[var(--ink-soft)]">
+        <div role="alert" className="panel mt-8 p-6 text-sm text-[var(--color-muted)]">
           Dashboard summary is unavailable right now.
         </div>
       )}
 
       {summary && !summaryLoading && (
         <>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="panel mt-8 grid grid-cols-2 gap-px overflow-hidden bg-[var(--color-rule)] lg:grid-cols-4 [&>*]:bg-[var(--color-cotton)]">
             <StatCard label="Revenue this month" value={`₹${summary.currentMonthRevenue.toLocaleString("en-IN")}`} />
             <StatCard label="Pending verification" value={String(summary.pendingPaymentsCount)} />
             <StatCard label="Verified this month" value={String(summary.verifiedPaymentsCount)} />
             <StatCard label="Total dues outstanding" value={`₹${summary.totalDueAmount.toLocaleString("en-IN")}`} />
           </div>
 
-          <h2 className="mt-10 text-base font-semibold">Recent transactions</h2>
+          <h2 className="mt-10 text-lg">Recent transactions</h2>
           {summary.recentTransactions.length === 0 ? (
-            <div className="mt-4 rounded-lg border border-dashed border-[var(--line)] bg-[var(--paper-raised)] p-8 text-center text-sm text-[var(--ink-soft)]">
+            <div className="mt-4 rounded-[var(--radius-card)] border border-dashed border-[var(--color-rule-2)] p-8 text-center text-sm text-[var(--color-muted)]">
               No payments submitted yet. Once tenants pay via a payment link, they&apos;ll appear here.
             </div>
           ) : (
-            <div className="mt-3 overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--paper-raised)]">
-              <table className="w-full text-sm">
+            <div className="panel mt-3 overflow-x-auto">
+              <table className="ledger-table" aria-label="Recent transactions">
                 <tbody>
                   {summary.recentTransactions.map((tx) => (
-                    <tr key={tx.id} className="border-b border-[var(--line)] last:border-0">
-                      <td className="px-4 py-3 font-medium">{tx.tenantName}</td>
-                      <td className="px-4 py-3 font-mono-data">₹{tx.amount.toLocaleString("en-IN")}</td>
-                      <td className="px-4 py-3 text-[var(--ink-soft)]">
+                    <tr key={tx.id}>
+                      <td className="whitespace-nowrap font-medium">{tx.tenantName}</td>
+                      <td className="num">₹{tx.amount.toLocaleString("en-IN")}</td>
+                      <td className="font-mono-data text-[var(--color-muted)]">
                         {tx.billingMonth}/{tx.billingYear}
                       </td>
-                      <td className="px-4 py-3 text-[var(--ink-soft)]">{tx.status}</td>
+                      <td>
+                        <Badge status={tx.status} />
+                      </td>
                     </tr>
                   ))}
                 </tbody>

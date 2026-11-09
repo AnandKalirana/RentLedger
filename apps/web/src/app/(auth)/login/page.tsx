@@ -39,29 +39,31 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthCard title="Log in" subtitle="Welcome back — enter your details below.">
+    <AuthCard title="Log in" subtitle="Welcome back. Enter your details below.">
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
         <Field label="Email" type="email" {...register("email")} error={errors.email?.message} />
         <div>
           <div className="flex items-center justify-between">
-            <label className="block text-sm font-medium text-[var(--ink)]">Password</label>
+            <label htmlFor="login-password" className="block text-sm font-medium text-[var(--color-ink)]">Password</label>
             <Link
               href="/forgot-password"
-              className="text-xs text-[var(--stamp)] hover:underline font-medium"
+              className="text-[0.8125rem] font-medium text-[var(--color-accent-deep)] underline-offset-4 hover:underline"
             >
               Forgot password?
             </Link>
           </div>
           <input
+            id="login-password"
             type="password"
             {...register("password")}
-            className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
+            aria-invalid={errors.password ? true : undefined}
+            className="input mt-1.5"
           />
           {errors.password?.message && (
-            <p className="mt-1 text-xs text-[var(--danger)]">{errors.password.message}</p>
+            <p className="mt-1.5 text-[0.8125rem] text-[var(--danger)]">{errors.password.message}</p>
           )}
         </div>
-        {serverError && <p className="text-sm text-[var(--danger)]">{serverError}</p>}
+        {serverError && <p role="alert" className="text-sm text-[var(--danger)]">{serverError}</p>}
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? "Logging in…" : "Log in"}
         </Button>
@@ -71,16 +73,16 @@ export default function LoginPage() {
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-[var(--line)]" />
         </div>
-        <span className="relative bg-[var(--paper-raised)] px-2 text-xs text-[var(--ink-soft)] uppercase tracking-wider">
+        <span className="relative bg-[var(--color-cotton)] px-2.5 text-[0.8125rem] text-[var(--color-muted)]">
           Or continue with
         </span>
       </div>
 
       <GoogleLoginButton />
 
-      <p className="mt-5 text-center text-sm text-[var(--ink-soft)]">
+      <p className="mt-5 text-center text-sm text-[var(--color-muted)]">
         No account yet?{" "}
-        <Link href="/register" className="font-medium text-[var(--ink)] hover:underline">
+        <Link href="/register" className="font-medium text-[var(--color-ink)] underline underline-offset-4 decoration-[var(--color-rule-2)] hover:decoration-[var(--color-accent)]">
           Create one
         </Link>
       </p>

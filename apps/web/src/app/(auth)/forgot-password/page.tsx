@@ -44,25 +44,25 @@ export default function ForgotPasswordPage() {
     <AuthCard title="Reset password" subtitle="Enter your registered email to receive reset instructions.">
       {successMsg ? (
         <div className="space-y-4 text-center">
-          <div className="rounded-md bg-[var(--stamp-soft)] p-4 text-sm text-[var(--stamp)]">
+          <div role="status" className="rounded-[var(--radius-input)] bg-[var(--stamp-soft)] p-4 text-sm text-[var(--color-accent-deep)] ring-1 ring-inset ring-[var(--stamp)]/25">
             {successMsg}
           </div>
-          <p className="text-xs text-[var(--ink-soft)]">
+          <p className="text-[0.8125rem] text-[var(--color-muted)]">
             Check your email inbox or check server logs in development environment.
           </p>
-          <Link href="/login" className="inline-block font-medium text-sm text-[var(--ink)] hover:underline">
+          <Link href="/login" className="inline-block text-sm font-medium text-[var(--color-ink)] underline underline-offset-4 decoration-[var(--color-rule-2)] hover:decoration-[var(--color-accent)]">
             Back to login
           </Link>
         </div>
       ) : (
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
           <Field label="Email" type="email" placeholder="you@example.com" {...register("email")} error={errors.email?.message} />
-          {serverError && <p className="text-sm text-[var(--danger)]">{serverError}</p>}
+          {serverError && <p role="alert" className="text-sm text-[var(--danger)]">{serverError}</p>}
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Sending reset link..." : "Send reset instructions"}
           </Button>
           <div className="text-center">
-            <Link href="/login" className="text-xs text-[var(--ink-soft)] hover:text-[var(--ink)]">
+            <Link href="/login" className="text-[0.8125rem] text-[var(--color-muted)] underline-offset-4 transition-colors hover:text-[var(--color-ink)] hover:underline">
               Back to login
             </Link>
           </div>

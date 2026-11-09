@@ -67,11 +67,11 @@ export default function TenantsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-8 py-8">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-8 sm:py-8">
+      <div className="ledger-head flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Tenants</h1>
-          <p className="mt-1 text-sm text-[var(--ink-soft)]">
+          <h1>Tenants</h1>
+          <p>
             Manage rent, deposits, and move-in details.
           </p>
         </div>
@@ -81,12 +81,16 @@ export default function TenantsPage() {
       </div>
 
       {loading && <SkeletonList lines={4} />}
-      {error && !loading && <p className="mt-8 text-sm text-[var(--danger)]">{error}</p>}
+      {error && !loading && (
+        <p role="alert" className="panel mt-8 p-4 text-sm text-[var(--danger)]">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && tenants.length === 0 && (
-        <div className="mt-8 rounded-lg border border-dashed border-[var(--line)] bg-[var(--paper-raised)] p-10 text-center">
-          <p className="text-sm font-medium text-[var(--ink)]">No tenants yet</p>
-          <p className="mt-1 text-sm text-[var(--ink-soft)]">
+        <div className="mt-8 rounded-[var(--radius-card)] border border-dashed border-[var(--color-rule-2)] p-10 text-center">
+          <p className="font-[family-name:var(--font-display)] text-base font-bold text-[var(--color-ink)]">No tenants yet</p>
+          <p className="mx-auto mt-1 text-sm text-[var(--color-muted)]">
             Add your first tenant to start collecting rent.
           </p>
           <Button className="mt-4" size="sm" onClick={() => setShowAddModal(true)}>
@@ -96,37 +100,37 @@ export default function TenantsPage() {
       )}
 
       {!loading && tenants.length > 0 && (
-        <div className="mt-8 overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--paper-raised)]">
-          <table className="w-full text-sm">
-            <thead className="border-b border-[var(--line)] bg-[var(--paper)] text-left text-xs uppercase tracking-wide text-[var(--ink-soft)]">
+        <div className="panel mt-6 overflow-x-auto">
+          <table className="ledger-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 font-medium">Name</th>
-                <th className="px-4 py-3 font-medium">Contact</th>
-                <th className="px-4 py-3 font-medium">Rent</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3" />
+                <th>Name</th>
+                <th>Contact</th>
+                <th className="text-right">Rent</th>
+                <th>Status</th>
+                <th aria-label="Actions" />
               </tr>
             </thead>
             <tbody>
               {tenants.map((tenant) => (
-                <tr key={tenant.id} className="border-b border-[var(--line)] last:border-0">
-                  <td className="px-4 py-3">
-                    <Link href={`/tenants/${tenant.id}`} className="font-medium hover:underline">
+                <tr key={tenant.id}>
+                  <td>
+                    <Link href={`/tenants/${tenant.id}`} className="whitespace-nowrap font-medium text-[var(--color-ink)] underline-offset-4 hover:text-[var(--color-accent-deep)] hover:underline">
                       {tenant.fullName}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-[var(--ink-soft)]">{tenant.mobileNumber}</td>
-                  <td className="px-4 py-3 font-mono-data">
+                  <td className="font-mono-data text-[var(--color-muted)]">{tenant.mobileNumber}</td>
+                  <td className="num">
                     ₹{tenant.monthlyRent.toLocaleString("en-IN")}
                   </td>
-                  <td className="px-4 py-3">
+                  <td>
                     <Badge status={tenant.status} />
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="text-right">
                     <button
                       onClick={() => handleDelete(tenant.id)}
                       aria-label="Delete tenant"
-                      className="rounded p-1.5 text-[var(--ink-soft)] hover:bg-[var(--danger-soft)] hover:text-[var(--danger)]"
+                      className="rounded-md p-2 text-[var(--color-muted)] transition-colors hover:bg-[var(--danger-soft)] hover:text-[var(--danger)] active:bg-[var(--danger-soft)]"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

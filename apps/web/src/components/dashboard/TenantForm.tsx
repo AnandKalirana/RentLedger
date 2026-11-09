@@ -50,11 +50,11 @@ export function TenantForm({
   return (
     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
       <Field label="Full name" {...register("fullName")} error={errors.fullName?.message} />
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Mobile number" {...register("mobileNumber")} error={errors.mobileNumber?.message} />
         <Field label="Email (optional)" type="email" {...register("email")} error={errors.email?.message} />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         <Field
           label="Monthly rent (₹)"
           type="number"
@@ -70,7 +70,7 @@ export function TenantForm({
           error={(errors as any).monthlyMaintenance?.message}
         />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         <Field
           label="Security deposit (₹)"
           type="number"
@@ -80,7 +80,7 @@ export function TenantForm({
         />
         <Field label="Move-in date" type="date" {...register("moveInDate")} error={errors.moveInDate?.message} />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         <Field
           label="Rent due day"
           type="number"
@@ -89,14 +89,15 @@ export function TenantForm({
           {...register("rentDueDay")}
           error={errors.rentDueDay?.message}
         />
-        <div />
+        <div className="hidden sm:block" />
       </div>
       <div>
-        <label className="block text-sm font-medium text-[var(--ink)]">Notes (optional)</label>
+        <label htmlFor="tenant-notes" className="block text-sm font-medium text-[var(--color-ink)]">Notes (optional)</label>
         <textarea
+          id="tenant-notes"
           {...register("notes")}
           rows={3}
-          className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
+          className="input mt-1.5"
         />
       </div>
       <Button type="submit" className="w-full" disabled={isSubmitting}>

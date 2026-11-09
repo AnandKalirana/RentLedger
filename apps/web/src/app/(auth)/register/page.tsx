@@ -49,14 +49,14 @@ export default function RegisterPage() {
           {...register("password")}
           error={errors.password?.message}
         />
-        {serverError && <p className="text-sm text-[var(--danger)]">{serverError}</p>}
+        {serverError && <p role="alert" className="text-sm text-[var(--danger)]">{serverError}</p>}
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? "Creating account…" : "Create account"}
         </Button>
       </form>
-      <p className="mt-5 text-center text-sm text-[var(--ink-soft)]">
+      <p className="mt-5 text-center text-sm text-[var(--color-muted)]">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-[var(--ink)] hover:underline">
+        <Link href="/login" className="font-medium text-[var(--color-ink)] underline underline-offset-4 decoration-[var(--color-rule-2)] hover:decoration-[var(--color-accent)]">
           Log in
         </Link>
       </p>

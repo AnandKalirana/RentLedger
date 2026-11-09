@@ -90,16 +90,16 @@ export default function PublicPaymentPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--paper)]">
-        <p className="text-sm text-[var(--ink-soft)]">Loading…</p>
+      <main className="ruled-paper flex min-h-screen items-center justify-center">
+        <p role="status" className="text-sm text-[var(--color-muted)]">Loading…</p>
       </main>
     );
   }
 
   if (error || !info) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--paper)] px-6">
-        <div className="w-full max-w-sm rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6 text-center text-sm text-[var(--ink-soft)]">
+      <main className="ruled-paper flex min-h-screen items-center justify-center px-4">
+        <div role="alert" className="panel w-full max-w-sm p-6 text-center text-sm text-[var(--color-muted)]">
           {error ?? "This payment link isn't available."}
         </div>
       </main>
@@ -108,11 +108,11 @@ export default function PublicPaymentPage() {
 
   if (submitted) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--paper)] px-6">
-        <div className="w-full max-w-sm rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6 text-center">
-          <CheckCircle2 className="mx-auto h-10 w-10 text-[var(--stamp)]" />
-          <h1 className="mt-3 text-lg font-semibold">Payment submitted</h1>
-          <p className="mt-2 text-sm text-[var(--ink-soft)]">
+      <main className="ruled-paper flex min-h-screen items-center justify-center px-4">
+        <div role="status" className="panel w-full max-w-sm p-7 text-center">
+          <CheckCircle2 className="mx-auto h-10 w-10 text-[var(--color-accent)]" strokeWidth={1.5} />
+          <h1 className="mt-3 text-[1.4rem]">Payment submitted</h1>
+          <p className="mx-auto mt-2 text-sm text-[var(--color-muted)]">
             {info.landlord.displayName} will review your proof and verify the payment shortly.
           </p>
         </div>
@@ -123,22 +123,24 @@ export default function PublicPaymentPage() {
   const qrImage = resolveFileUrl(info.landlord.upiQrImageUrl) ?? qrDataUrl;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[var(--paper)] px-6 py-10">
-      <div className="w-full max-w-sm rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6">
-        <h1 className="text-lg font-semibold">{info.landlord.displayName}</h1>
-        <p className="mt-1 text-sm text-[var(--ink-soft)]">Pay rent via UPI, then submit proof below.</p>
+    <main className="ruled-paper flex min-h-screen items-start justify-center px-4 py-8 sm:items-center sm:py-10">
+      <div className="panel w-full max-w-sm p-6">
+        <div className="border-b-4 border-double border-[var(--color-rule-2)] pb-4">
+          <h1 className="text-[1.4rem]">{info.landlord.displayName}</h1>
+          <p className="mt-1 text-sm text-[var(--color-muted)]">Pay rent via UPI, then submit proof below.</p>
+        </div>
 
         {qrImage && (
-          <div className="mt-4 flex flex-col items-center rounded-md border border-dashed border-[var(--line)] p-4">
+          <div className="mt-5 flex flex-col items-center rounded-[var(--radius-input)] border border-dashed border-[var(--color-rule-2)] bg-[var(--color-paper)] p-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={qrImage} alt="UPI QR code" className="h-44 w-44" />
+            <img src={qrImage} alt="UPI QR code" className="h-44 w-44 rounded-md bg-white p-1.5" />
             {info.landlord.upiId && (
-              <p className="mt-2 font-mono-data text-xs text-[var(--ink-soft)]">{info.landlord.upiId}</p>
+              <p className="mt-2 break-all font-mono-data text-[0.8125rem] text-[var(--color-muted)]">{info.landlord.upiId}</p>
             )}
           </div>
         )}
 
-        <form className="mt-5 space-y-3" onSubmit={handleSubmit}>
+        <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
           <Field
             label="Your name"
             value={form.submittedName}
@@ -167,11 +169,12 @@ export default function PublicPaymentPage() {
           />
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-[var(--ink)]">Month</label>
+              <label htmlFor="pay-month" className="block text-sm font-medium text-[var(--color-ink)]">Month</label>
               <select
+                id="pay-month"
                 value={form.billingMonth}
                 onChange={(e) => setForm({ ...form, billingMonth: e.target.value })}
-                className="mt-1.5 w-full rounded-md border border-[var(--line)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--stamp)]"
+                className="input mt-1.5"
               >
                 {MONTHS.map((m, i) => (
                   <option key={m} value={i + 1}>
@@ -190,8 +193,8 @@ export default function PublicPaymentPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--ink)]">Payment screenshot</label>
-            <label className="mt-1.5 flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-[var(--line)] bg-white px-3 py-4 text-sm text-[var(--ink-soft)] hover:border-[var(--stamp)]">
+            <span className="block text-sm font-medium text-[var(--color-ink)]">Payment screenshot</span>
+            <label className="mt-1.5 flex min-h-14 cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-input)] border border-dashed border-[var(--color-rule-2)] bg-[var(--color-cotton)] px-3 py-4 text-center text-sm text-[var(--color-muted)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-ink)] focus-within:border-[var(--color-accent)] focus-within:ring-2 focus-within:ring-[var(--color-focus)] focus-within:ring-offset-2">
               <Upload className="h-4 w-4" />
               {file ? file.name : "Choose an image (JPG, PNG, WEBP · max 5MB)"}
               <input
@@ -203,7 +206,7 @@ export default function PublicPaymentPage() {
             </label>
           </div>
 
-          {submitError && <p className="text-sm text-[var(--danger)]">{submitError}</p>}
+          {submitError && <p role="alert" className="text-sm text-[var(--danger)]">{submitError}</p>}
 
           <Button type="submit" className="w-full" disabled={submitting}>
             {submitting ? "Submitting…" : "Submit payment"}

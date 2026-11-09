@@ -69,19 +69,19 @@ export function NotificationBell() {
       <button
         onClick={handleOpen}
         aria-label="Notifications"
-        className="relative rounded-md p-2 text-[var(--ink-soft)] hover:bg-[var(--paper)] hover:text-[var(--ink)]"
+        className="relative rounded-[var(--radius-input)] p-2 text-[var(--color-muted)] transition-colors hover:bg-[var(--color-paper-2)] hover:text-[var(--color-ink)] active:bg-[var(--color-paper-3)]"
       >
         <Bell className="h-5 w-5" strokeWidth={1.75} />
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--stamp)] px-1 text-[10px] font-medium text-white">
+          <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[var(--stamp)] px-1 text-[11px] font-medium text-white">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 z-40 mt-2 w-80 rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] shadow-lg">
-          <div className="border-b border-[var(--line)] px-4 py-3">
+        <div className="absolute right-0 z-40 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-[var(--radius-card)] border border-[var(--color-rule)] bg-[var(--color-cotton)] shadow-[var(--shadow-pop)]">
+          <div className="border-b border-[var(--color-rule)] px-4 py-3">
             <span className="text-sm font-semibold">Notifications</span>
           </div>
           <div className="max-h-80 overflow-y-auto">
@@ -94,14 +94,14 @@ export function NotificationBell() {
                 <button
                   key={n.id}
                   onClick={() => markRead(n.id)}
-                  className="flex w-full flex-col items-start gap-0.5 border-b border-[var(--line)] px-4 py-3 text-left last:border-0 hover:bg-[var(--paper)]"
+                  className="flex w-full flex-col items-start gap-0.5 border-b border-[var(--color-rule)] px-4 py-3 text-left transition-colors last:border-0 hover:bg-[var(--color-paper-2)] active:bg-[var(--color-paper-3)]"
                 >
                   <div className="flex w-full items-center gap-2">
                     {!n.isRead && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--stamp)]" />}
                     <span className="text-sm font-medium">{n.title}</span>
                   </div>
-                  <p className="text-xs text-[var(--ink-soft)]">{n.message}</p>
-                  <p className="text-[10px] text-[var(--ink-soft)]">{timeAgo(n.createdAt)}</p>
+                  <p className="text-[0.8125rem] text-[var(--color-muted)]">{n.message}</p>
+                  <p className="text-[11px] text-[var(--color-muted)]">{timeAgo(n.createdAt)}</p>
                 </button>
               ))
             )}

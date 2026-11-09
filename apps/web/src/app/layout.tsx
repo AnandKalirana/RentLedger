@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/rethink-sans";
+import "@fontsource-variable/hanken-grotesk";
+import "@fontsource-variable/geist-mono";
 import "./globals.css";
+import "./tokens.css";
+import "./base.css";
 import { ToastProvider } from "@/components/ui/Toast";
 import { QueryProvider } from "@/components/QueryProvider";
 

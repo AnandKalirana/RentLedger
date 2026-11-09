@@ -72,12 +72,17 @@ const steps = [
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-[var(--paper)]">
-      <header className="border-b border-[var(--line)] bg-[var(--paper-raised)]">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <span className="text-lg font-semibold tracking-tight">RentLedger</span>
-          <nav className="flex items-center gap-3">
-            <Link href="/login" className="px-3 py-2 text-sm font-medium text-[var(--ink-soft)] hover:text-[var(--ink)]">
+    <main className="min-h-screen bg-[var(--color-paper)]">
+      <header className="border-b border-[var(--color-rule)] bg-[var(--color-cotton)]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+          <span className="font-[family-name:var(--font-display)] text-xl font-bold tracking-tight">
+            Rent<span className="text-[var(--color-accent)]">Ledger</span>
+          </span>
+          <nav className="flex items-center gap-2">
+            <Link
+              href="/login"
+              className="whitespace-nowrap rounded-[var(--radius-input)] px-3 py-2 text-sm font-medium text-[var(--color-ink-2)] transition-colors hover:bg-[var(--color-paper-2)] hover:text-[var(--color-ink)] active:bg-[var(--color-paper-3)]"
+            >
               Log in
             </Link>
             <Link href="/register">
@@ -88,60 +93,61 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 pb-20 pt-16 sm:pt-24">
-        <div className="grid items-center gap-14 lg:grid-cols-2">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--stamp-soft)] bg-[var(--stamp-soft)] px-3 py-1 text-xs font-semibold text-[var(--stamp)]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--stamp)] animate-pulse" />
-              UPI Rent Collection + Dues Tracking
-            </div>
-            <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-              Every rent payment,
-              <br />
-              verified and logged.
-            </h1>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-[var(--ink-soft)]">
-              RentLedger gives landlords one place to manage tenants, collect rent through a
-              shared UPI payment link, and verify every submission with complete proof.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href="/register">
-                <Button size="lg" className="gap-2">
-                  Get started free <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="#how-it-works">
-                <Button variant="secondary" size="lg">
-                  See how it works
-                </Button>
-              </Link>
-            </div>
-          </div>
-
-          <div className="flex justify-center">
-            <div className="w-full max-w-sm -rotate-2 rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6 shadow-md transition-transform hover:rotate-0">
-              <div className="flex items-center justify-between border-b border-dashed border-[var(--line)] pb-3">
-                <span className="text-sm font-medium">Payment record</span>
-                <span className="font-mono-data text-xs text-[var(--ink-soft)]">#PL-2201</span>
+      <section className="ruled-paper border-b border-[var(--color-rule)]">
+        <div className="mx-auto max-w-6xl px-4 pb-20 pt-14 sm:px-6 sm:pt-20 lg:pb-28">
+          <div className="grid items-center gap-14 lg:grid-cols-[1.1fr_0.9fr]">
+            <div>
+              <p className="font-mono-data text-[0.8125rem] font-medium text-[var(--color-accent-deep)]">
+                UPI Rent Collection + Dues Tracking
+              </p>
+              <h1 className="mt-4 max-w-none text-[clamp(2.4rem,5.4vw,4rem)] leading-[1.02]">
+                Every rent payment,
+                <br />
+                verified and logged.
+              </h1>
+              <p className="mt-6 max-w-md text-[1.05rem] leading-relaxed text-[var(--color-ink-2)]">
+                RentLedger gives landlords one place to manage tenants, collect rent through a
+                shared UPI payment link, and verify every submission with complete proof.
+              </p>
+              <div className="mt-9 flex flex-wrap items-center gap-3">
+                <Link href="/register">
+                  <Button size="lg" className="gap-2">
+                    Get started free <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="#how-it-works">
+                  <Button variant="secondary" size="lg">
+                    See how it works
+                  </Button>
+                </Link>
               </div>
-              <dl className="mt-4 space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <dt className="text-[var(--ink-soft)]">Tenant</dt>
-                  <dd className="font-medium">A. Sharma</dd>
+            </div>
+
+            <div className="flex justify-center lg:justify-end">
+              <div className="panel w-full max-w-sm -rotate-2 p-6 shadow-[var(--shadow-pop)] transition-transform duration-300 hover:rotate-0">
+                <div className="flex items-center justify-between border-b-4 border-double border-[var(--color-rule-2)] pb-3">
+                  <span className="font-[family-name:var(--font-display)] text-base font-bold tracking-tight">Payment record</span>
+                  <span className="font-mono-data text-[0.8125rem] text-[var(--color-muted)]">#PL-2201</span>
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-[var(--ink-soft)]">Rent due</dt>
-                  <dd className="font-mono-data">₹18,000</dd>
+                <dl className="mt-5 space-y-3.5 text-sm">
+                  <div className="flex justify-between gap-4 border-b border-dashed border-[var(--color-rule)] pb-3.5">
+                    <dt className="text-[var(--color-muted)]">Tenant</dt>
+                    <dd className="font-medium">A. Sharma</dd>
+                  </div>
+                  <div className="flex justify-between gap-4 border-b border-dashed border-[var(--color-rule)] pb-3.5">
+                    <dt className="text-[var(--color-muted)]">Rent due</dt>
+                    <dd className="font-mono-data">₹18,000</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-[var(--color-muted)]">Submitted</dt>
+                    <dd className="font-mono-data">2 Jul, 10:14 AM</dd>
+                  </div>
+                </dl>
+                <div className="mt-7 flex justify-end">
+                  <span className="inline-block rotate-[-6deg] rounded-md border-2 border-[var(--color-accent)] px-3 py-1 font-mono-data text-sm font-medium text-[var(--color-accent)] animate-[stampIn_0.5s_var(--ease-out)_0.35s_both]">
+                    VERIFIED
+                  </span>
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-[var(--ink-soft)]">Submitted</dt>
-                  <dd className="font-mono-data">2 Jul, 10:14 AM</dd>
-                </div>
-              </dl>
-              <div className="mt-6 flex justify-end">
-                <span className="rotate-[-6deg] rounded border-2 border-[var(--stamp)] px-3 py-1 font-mono-data text-sm font-semibold tracking-wider text-[var(--stamp)]">
-                  VERIFIED
-                </span>
               </div>
             </div>
           </div>
@@ -149,13 +155,13 @@ export default function LandingPage() {
       </section>
 
       {/* Value Prop Banner */}
-      <section className="border-y border-[var(--line)] bg-[var(--paper-raised)] py-10">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="grid gap-6 md:grid-cols-3">
+      <section className="border-b border-[var(--color-rule)] bg-[var(--color-cotton)]">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="grid divide-y divide-[var(--color-rule)] md:grid-cols-3 md:divide-x md:divide-y-0">
             {valueProps.map((vp) => (
-              <div key={vp.label} className="flex flex-col gap-1 border-l-2 border-[var(--stamp)] pl-4">
-                <span className="font-medium text-[var(--ink)]">{vp.label}</span>
-                <span className="text-sm text-[var(--ink-soft)]">{vp.desc}</span>
+              <div key={vp.label} className="flex flex-col gap-1.5 py-7 md:px-8 md:first:pl-0 md:last:pr-0">
+                <span className="font-[family-name:var(--font-display)] text-base font-bold tracking-tight text-[var(--color-ink)]">{vp.label}</span>
+                <span className="text-sm leading-relaxed text-[var(--color-muted)]">{vp.desc}</span>
               </div>
             ))}
           </div>
@@ -163,63 +169,67 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section className="bg-[var(--paper)] py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="max-w-xl">
-            <h2 className="text-2xl font-semibold tracking-tight">Built around the way rent actually gets paid</h2>
-            <p className="mt-2 text-sm text-[var(--ink-soft)]">
+      <section className="py-20 sm:py-24">
+        <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+          <div className="lg:sticky lg:top-12 lg:self-start">
+            <h2 className="max-w-[18ch] text-[clamp(1.7rem,3vw,2.3rem)] leading-[1.08]">Built around the way rent actually gets paid</h2>
+            <p className="mt-4 max-w-sm text-[0.95rem] leading-relaxed text-[var(--color-muted)]">
               No complex setup. Share your payment link, accept UPI payments, and keep audit-proof records.
             </p>
           </div>
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="divide-y divide-[var(--color-rule)] border-y border-[var(--color-rule)]">
             {features.map((feature) => (
-              <div key={feature.title} className="rounded-lg border border-[var(--line)] bg-[var(--paper-raised)] p-6 shadow-sm">
-                <feature.icon className="h-6 w-6 text-[var(--stamp)]" strokeWidth={1.75} />
-                <h3 className="mt-4 font-medium">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">
-                  {feature.description}
-                </p>
-              </div>
+              <li key={feature.title} className="flex gap-4 py-6">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-input)] bg-[var(--color-accent-soft)] text-[var(--color-accent-deep)] ring-1 ring-inset ring-[var(--color-accent)]/20">
+                  <feature.icon className="h-5 w-5" strokeWidth={1.75} />
+                </span>
+                <div>
+                  <h3 className="font-[family-name:var(--font-display)] text-base">{feature.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-[var(--color-muted)]">
+                    {feature.description}
+                  </p>
+                </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="border-t border-[var(--line)] bg-[var(--paper-raised)] py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-2xl font-semibold tracking-tight">How it works</h2>
-          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <section id="how-it-works" className="border-y border-[var(--color-rule)] bg-[var(--color-cotton)] py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 className="text-[clamp(1.7rem,3vw,2.3rem)]">How it works, in four steps</h2>
+          <ol className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
             {steps.map((step) => (
-              <div key={step.number} className="border-t-2 border-[var(--stamp)] pt-4">
-                <span className="font-mono-data text-xs text-[var(--ink-soft)]">{step.number}</span>
-                <h3 className="mt-2 font-medium">{step.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-[var(--ink-soft)]">{step.description}</p>
-              </div>
+              <li key={step.number} className="border-t-2 border-[var(--color-ink)] pt-4">
+                <span className="font-mono-data text-[0.8125rem] font-medium text-[var(--color-accent-deep)]">{step.number}</span>
+                <h3 className="mt-2 font-[family-name:var(--font-display)] text-base">{step.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-[var(--color-muted)]">{step.description}</p>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="border-t border-[var(--line)] bg-[var(--paper)]">
-        <div className="mx-auto max-w-6xl px-6 py-16 text-center">
-          <h2 className="text-2xl font-semibold tracking-tight">Set up your first payment link today</h2>
-          <p className="mx-auto mt-3 max-w-md text-sm text-[var(--ink-soft)]">
-            Add your tenants and start collecting verified rent payments in minutes.
-          </p>
-          <div className="mt-6 flex justify-center">
-            <Link href="/register">
-              <Button size="lg">Create your free account</Button>
-            </Link>
+      <section className="px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 rounded-[var(--radius-card)] bg-[var(--color-ink)] [--color-focus:var(--color-focus-on-ink)] px-7 py-12 text-[var(--color-paper)] sm:px-12 md:flex-row md:items-center">
+          <div>
+            <h2 className="max-w-[22ch] text-[clamp(1.6rem,3vw,2.2rem)] leading-[1.1] text-[var(--color-paper)]">Set up your first payment link today</h2>
+            <p className="mt-3 max-w-md text-[0.95rem] text-[var(--color-paper-dim)]">
+              Add your tenants and start collecting verified rent payments in minutes.
+            </p>
           </div>
+          <Link href="/register" className="shrink-0">
+            <Button size="lg">Create your free account</Button>
+          </Link>
         </div>
       </section>
 
-      <footer className="border-t border-[var(--line)] bg-[var(--paper-raised)]">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 py-8 text-sm text-[var(--ink-soft)] sm:flex-row">
+      <footer className="border-t border-[var(--color-rule)] bg-[var(--color-cotton)]">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-[var(--color-muted)] sm:flex-row sm:px-6">
           <span>© {new Date().getFullYear()} RentLedger. All rights reserved.</span>
-          <a href="mailto:support@rentledger.app" className="hover:text-[var(--ink)]">
+          <a href="mailto:support@rentledger.app" className="underline-offset-4 transition-colors hover:text-[var(--color-ink)] hover:underline">
             support@rentledger.app
           </a>
         </div>
