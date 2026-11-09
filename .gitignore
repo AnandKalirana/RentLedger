@@ -38,3 +38,6 @@ coverage/
 
 # Misc
 *.tsbuildinfo
+
+# Hallmark design-review output (screenshots, before/after records)
+.hallmark/
